@@ -51,6 +51,7 @@ DASHBOARD_TOPIC)
 #Função que será chamada no momento que a conexão com o broker for feita
 def on_connect(client, userdata, flags, rc):    
     print("Connected with result code "+str(rc))    
+    print(ROBOT_POSITION_TOPIC_CALLBACK)
     client.subscribe(ROBOT_POSITION_TOPIC_CALLBACK) #Se inscreve em um tópico
 #Função que vai ser chamada sxempre que chegar uma mensagem do tópico que está inscrito
 
