@@ -4,8 +4,12 @@ import json
 from ..DTO.RobotDTO import RobotDTO
 
 from ..controller.RobotController import RobotController
+
 from ..External.yaskawaHC10Connection import yaskawaHC10Connection
 from ..adapter.YaskawaRobotAdapter import YaskawaRobotAdapter
+
+from ..External.MIRConnection import MIRConnection
+from ..adapter.MirAdapter import MirAdapter
 
 from ..DTO.RequestDTO import RequestDTO
 
@@ -23,6 +27,8 @@ BROKER_PORT=int(os.getenv("BROKER_PORT"))
 BROKER_USER=os.getenv("BROKER_USER")
 BROKER_PASSWORD=os.getenv("BROKER_PASSWORD")
 
+ROBOT_TYPE=os.getenv("ROBOT_TYPE")
+
 ROBOT_POSITION_TOPIC=os.getenv("ROBOT_POSITION_TOPIC")
 ROBOT_POSITION_TOPIC_CALLBACK=os.getenv("ROBOT_POSITION_TOPIC_CALLBACK")
 ROBOT_IP=os.getenv("ROBOT_IP")
@@ -32,6 +38,11 @@ ROBOT_NUMBER=os.getenv("ROBOT_NUMBER")
 ROBOT_DESCRIPTION=os.getenv("ROBOT_DESCRIPTION")
 ROBOT_BRAND=os.getenv("ROBOT_BRAND")
 DASHBOARD_TOPIC=os.getenv("DASHBOARD_TOPIC")
+ROBOT_PASSWORD=os.getenv("ROBOT_PASSWORD")
+
+if ROBOT_TYPE not in ["MIR100", "YASKAWA"]: 
+    print("ROBOT_TYPE unknown")
+    exit()
 
 print(BROKER_IP,
 BROKER_PORT,
@@ -78,8 +89,13 @@ def sendRobotPosition(client):
     # newRobot = RobotDTO("Yaskawa", "Robo de montagem do lab 10", 6)
     newRobot = RobotDTO(ROBOT_BRAND, ROBOT_DESCRIPTION, ROBOT_AXIS_NUMBER)
 
-    robotConnector = yaskawaHC10Connection(ROBOT_IP, ROBOT_PORT)
-    robotAdapter = YaskawaRobotAdapter()
+    if ROBOT_TYPE == "YASKAWA":
+        robotConnector = yaskawaHC10Connection(ROBOT_IP, ROBOT_PORT)
+        robotAdapter = YaskawaRobotAdapter()
+    if ROBOT_TYPE == "MIR100":
+        robotConnector = MIRConnection(ROBOT_IP, ROBOT_PASSWORD)
+        robotAdapter = MirAdapter()
+        
 
     while True:
         try:
