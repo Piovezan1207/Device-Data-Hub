@@ -14,3 +14,4 @@ class RequestAdapterInterface():
     @abstractmethod
     def adaptRequestInformations(request: Request):
         pass
+    

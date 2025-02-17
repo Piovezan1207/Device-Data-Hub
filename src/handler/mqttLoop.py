@@ -6,6 +6,7 @@ from ..DTO.RobotDTO import RobotDTO
 from ..controller.RobotController import RobotController
 
 from ..External.yaskawaHC10Connection import yaskawaHC10Connection
+from ..External.yaskawaGP8Connection import yaskawaGP8Connection
 from ..adapter.YaskawaRobotAdapter import YaskawaRobotAdapter
 
 from ..External.MIRConnection import MIRConnection
@@ -89,8 +90,11 @@ def sendRobotPosition(client):
     # newRobot = RobotDTO("Yaskawa", "Robo de montagem do lab 10", 6)
     newRobot = RobotDTO(ROBOT_BRAND, ROBOT_DESCRIPTION, ROBOT_AXIS_NUMBER)
 
-    if ROBOT_TYPE == "YASKAWA":
+    if ROBOT_TYPE == "HC10":
         robotConnector = yaskawaHC10Connection(ROBOT_IP, ROBOT_PORT)
+        robotAdapter = YaskawaRobotAdapter()
+    if ROBOT_TYPE == "GP8":
+        robotConnector = yaskawaGP8Connection(ROBOT_IP, ROBOT_PORT)
         robotAdapter = YaskawaRobotAdapter()
     if ROBOT_TYPE == "MIR100":
         robotConnector = MIRConnection(ROBOT_IP, ROBOT_PASSWORD)
