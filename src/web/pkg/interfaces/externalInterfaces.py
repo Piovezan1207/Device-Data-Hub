@@ -4,7 +4,7 @@ from abc import ABC, abstractmethod
 class ConnectionExternalInterface():
     
     @abstractmethod
-    def createConnection(self, connection, mqttBroker) -> str:
+    def createConnection(self, connection) -> str:
         pass
     
     @abstractmethod

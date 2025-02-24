@@ -55,7 +55,7 @@ class ThreadManager:
 
     
         
-manager = ThreadManager()
+
         
 class getDataThread(threading.Thread):
     def __init__(self, 
@@ -93,9 +93,10 @@ class getDataThread(threading.Thread):
     def sendRobotPosition(self):
         # try:
             robot_information = RobotController.getRobotInfo(self.newRobot, self.robotConnector, self.robotAdapter)
-            if self.client.is_connected():
-                # print("Estou conectado, publicando...", self.ROBOT_POSITION_TOPIC , robot_information)
-                self.client.publish(self.ROBOT_POSITION_TOPIC , robot_information)
+            print(robot_information)
+            # if self.client.is_connected():
+            #     # print("Estou conectado, publicando...", self.ROBOT_POSITION_TOPIC , robot_information)
+            #     self.client.publish(self.ROBOT_POSITION_TOPIC , robot_information)
         # except:
         #     pass
 
@@ -107,26 +108,30 @@ class connectionExternal(ConnectionExternalInterface):
     
     def createConnection(self, connection) :
         
-        topic = connection.topic
+        print(connection)
+        
+        topic = connection.mqttTopic
         ip = connection.ip
         robot = connection.robot
         port = connection.port
         description = connection.description
         mqttSender = connection.sender
         
-        password = connection.password
+        password = connection.token
         if robot.type == "HC10":
             robotConnector = yaskawaHC10Connection(ip, port)
             robotAdapter = YaskawaRobotAdapter()
-        if robot.type == "GP8":
+        elif robot.type == "GP8":
             robotConnector = yaskawaGP8Connection(ip, port)
             robotAdapter = YaskawaRobotAdapter()
-        if robot.type == "MIR100":
+        elif robot.type == "MIR100":
             robotConnector = MIRConnection(ip, password)
             robotAdapter = MirAdapter()
+        else:
+            raise Exception("Robot not found")
         
         robotThread = getDataThread(mqttSender, robot.brand, description, robot.axis, topic, password, robotConnector, robotAdapter)
-        self._manager.addThread(robotThread)
+        self._manager.addThread(robotThread, connection.id)
 
         connection.status = "running"
             

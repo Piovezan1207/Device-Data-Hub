@@ -39,7 +39,7 @@ def upgrade() -> None:
     sa.Column('port', sa.Integer(), nullable=False),
     sa.Column('description', sa.String(length=256), nullable=True),
     # sa.Column('number', sa.String(length=64), nullable=True),
-    sa.Column('password', sa.String(length=128), nullable=True),
+    sa.Column('token', sa.String(length=128), nullable=True),
     sa.ForeignKeyConstraint(['robot_id'], ['robots.id'], ondelete='CASCADE'),
     sa.PrimaryKeyConstraint('id')
     )
@@ -69,8 +69,8 @@ def upgrade() -> None:
 
     # Dados a serem inseridos
     conn_data = [
-        {'robot_id': '1', 'topic': '/teste/2', 'ip': '0.0.0.0', 'port': 502, 'description': 'teste descrição', 'password': '1234'},
-        {'robot_id': '2', 'topic': '/teste/3', 'ip': '1.0.2.0', 'port': 503, 'description': 'Main control testeteste', 'password': '123467'},
+        {'robot_id': '1', 'topic': '/teste/2', 'ip': '0.0.0.0', 'port': 502, 'description': 'teste descrição', 'token': '1234'},
+        {'robot_id': '2', 'topic': '/teste/3', 'ip': '1.0.2.0', 'port': 503, 'description': 'Main control testeteste', 'token': '123467'},
         
 
     ]

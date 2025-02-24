@@ -3,9 +3,10 @@ from src.web.pkg.interfaces.externalInterfaces import DataBaseExternalInterface
 
 class SqliteDatabase(DataBaseExternalInterface):
     def __init__(self,
-                 cursor):
+                 conn):
         
-        self._cursor = cursor
+        self._conn = conn
+        self._cursor = conn.cursor()
         
     def get(self, id, table) -> str:
         query = f"SELECT * FROM {table} WHERE id = {id}"
@@ -32,7 +33,7 @@ class SqliteDatabase(DataBaseExternalInterface):
         query = f"INSERT INTO {table} ({columns}) VALUES ({placeholders})"
         
         self._cursor.execute(query, values)
-        self.conn.commit()
+        self._conn.commit()
         return self._cursor.lastrowid
     
     
@@ -45,7 +46,7 @@ class SqliteDatabase(DataBaseExternalInterface):
         query = f"UPDATE {table} SET {columns} = {placeholders} WHERE id = {id}"
         
         self._cursor.execute(query, values)
-        self.conn.commit()
+        self._conn.commit()
         return self._cursor.lastrowid
 
     def delete(self, id, table) -> str:
@@ -53,7 +54,7 @@ class SqliteDatabase(DataBaseExternalInterface):
         query = f"DELETE FROM {table} WHERE id = {id}"
         
         self._cursor.execute(query)
-        self.conn.commit()
+        self._conn.commit()
         return self._cursor.lastrowid
     
         

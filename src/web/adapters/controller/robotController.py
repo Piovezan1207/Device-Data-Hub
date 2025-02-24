@@ -5,41 +5,52 @@ from src.web.pkg.interfaces.gatewayInterfaces import DataBaseGatewayInterface
 
 from src.web.pkg.interfaces.externalInterfaces import DataBaseExternalInterface
 
+from src.web.pkg.interfaces.AdapterInterfaces import RobotAdapterInterface
+from src.web.adapters.presenter.RobotPresenter import DefaultRobotPresenter
+
 class robotController:
     @staticmethod
-    def getAllRobots(dataBaseExternal: DataBaseExternalInterface):
+    def getAllRobots(dataBaseExternal: DataBaseExternalInterface, robotAdapter: RobotAdapterInterface = DefaultRobotPresenter):
         
         databaseGateway = DataBaseGateway(dataBaseExternal)
         
         robots = RobotUseCases.getAllRobots(databaseGateway)
 
-        return robots  #Adicionar adapter!!
+        adapter = robotAdapter()
+
+        return adapter.adaptRobotsInformation(robots)
     
     @staticmethod
-    def getRobot(id, dataBaseExternal: DataBaseExternalInterface):
+    def getRobot(id, dataBaseExternal: DataBaseExternalInterface, robotAdapter: RobotAdapterInterface = DefaultRobotPresenter):
         
         databaseGateway = DataBaseGateway(dataBaseExternal)
         
         robot = RobotUseCases.getRobot(id, databaseGateway)
         
-        return robot #Adicionar adapter!!
+        adapter = robotAdapter()
+        
+        return adapter.adaptRobotInformation(robot)
         
         
     
     @staticmethod
-    def createRobot(typeR, axis, brand, dataBaseExternal: DataBaseExternalInterface):
+    def createRobot(typeR, axis, brand, dataBaseExternal: DataBaseExternalInterface, robotAdapter: RobotAdapterInterface = DefaultRobotPresenter):
         
         databaseGateway = DataBaseGateway(dataBaseExternal)
         
         robot = RobotUseCases.create(typeR, axis, brand, databaseGateway)
         
-        return robot #Adicionar adapter!!
+        adapter = robotAdapter()
+        
+        return adapter.adaptRobotInformation(robot)
     
     @staticmethod
-    def deleteRobot(id, dataBaseExternal: DataBaseExternalInterface):
+    def deleteRobot(id, dataBaseExternal: DataBaseExternalInterface, robotAdapter: RobotAdapterInterface = DefaultRobotPresenter):
         
         databaseGateway = DataBaseGateway(dataBaseExternal)
         
         deleted = RobotUseCases.deleteRobot(id, databaseGateway)
         
-        return deleted  #Adicionar adapter!!
+        adapter = robotAdapter()
+        
+        return adapter.adaptRobotInformation(deleted)

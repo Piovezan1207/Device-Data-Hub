@@ -24,7 +24,7 @@ class Connection(Base):
     port = Column(Integer, nullable=False)
     description = Column(String(256), nullable=True)
     # number = Column(String(64), nullable=True)
-    password = Column(String(128), nullable=True)
+    token = Column(String(128), nullable=True)
 
     # Relacionamento com a tabela de robôs
     robot = relationship("Robot", back_populates="connections")

@@ -24,7 +24,7 @@ class Robot:
         return self._type
 
     @property
-    def axis_number(self) -> int:
+    def axis(self) -> int:
         return self._axis
 
     

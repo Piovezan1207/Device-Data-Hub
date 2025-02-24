@@ -8,11 +8,13 @@ from src.web.adapters.gateway.DataBaseGateway import DataBaseGateway
 from src.web.pkg.interfaces.gatewayInterfaces import DataBaseGatewayInterface
 from src.web.pkg.interfaces.externalInterfaces import ConnectionExternalInterface, DataBaseExternalInterface
 
+from src.web.pkg.interfaces.AdapterInterfaces import ConnectAdapterInterface
+from src.web.adapters.presenter.ConnectionPresenter import DefaultConnectionPresenter
 
 class ConnectionController:
     
     @staticmethod
-    def runAllConnections(dataBaseExternal: DataBaseExternalInterface, connectionExternal: ConnectionExternalInterface, senderClient):
+    def runAllConnections(dataBaseExternal: DataBaseExternalInterface, connectionExternal: ConnectionExternalInterface, senderClient, connectAdapter: ConnectAdapterInterface = DefaultConnectionPresenter):
         
         dataBaseGateway = DataBaseGateway(dataBaseExternal)
         
@@ -23,18 +25,21 @@ class ConnectionController:
         for conn in connections:
             newConn = ConnectionUseCases.runConnection(conn, connectionExternal)
             newConnections.append(newConn)
-            
         
-        return newConnections #Adicionar adapter!!
+        adapter =  connectAdapter()
+        
+        return adapter.adaptConnectionsInformation(newConnections)
     
     @staticmethod
-    def deleteConnection(id: int, dataBaseExternal: DataBaseExternalInterface,  connectionExternal: ConnectionExternalInterface):
+    def deleteConnection(id: int, dataBaseExternal: DataBaseExternalInterface,  connectionExternal: ConnectionExternalInterface, connectAdapter: ConnectAdapterInterface = DefaultConnectionPresenter):
         
         dataBaseGateway = DataBaseGateway(dataBaseExternal)
         
         deleted = ConnectionUseCases.deleteConnection(id, dataBaseGateway, connectionExternal)
         
-        return deleted #Adicionar adapter!!
+        adapter =  connectAdapter()
+        
+        return adapter.adaptConnectionInformation(deleted)
     
     @staticmethod
     def createConnection(ip: str, 
@@ -45,7 +50,8 @@ class ConnectionController:
                 robotId: int,
                 dataBaseExternal: DataBaseExternalInterface,
                 connectionExternal: ConnectionExternalInterface,
-                senderClient):
+                senderClient,
+                connectAdapter: ConnectAdapterInterface = DefaultConnectionPresenter):
         
         dataBaseGateway = DataBaseGateway(dataBaseExternal)
         
@@ -53,22 +59,28 @@ class ConnectionController:
         
         newConnection = ConnectionUseCases.runConnection(connection, connectionExternal)
         
-        return newConnection #Adicionar adapter!!
+        adapter =  connectAdapter()
+        
+        return adapter.adaptConnectionInformation(newConnection)
     
     @staticmethod
-    def getConnection(id: int, dataBaseExternal: DataBaseExternalInterface, senderClient):
+    def getConnection(id: int, dataBaseExternal: DataBaseExternalInterface, senderClient, connectAdapter: ConnectAdapterInterface = DefaultConnectionPresenter):
         
         dataBaseGateway = DataBaseGateway(dataBaseExternal)
         
         connection = ConnectionUseCases.getConnection(id, dataBaseGateway, senderClient)
         
-        return connection #Adicionar adapter!!
+        adapter =  connectAdapter()
+        
+        return adapter.adaptConnectionInformation(connection)
     
     @staticmethod
-    def getAllConnections(dataBaseExternal: DataBaseExternalInterface, senderClient):
+    def getAllConnections(dataBaseExternal: DataBaseExternalInterface, senderClient, connectAdapter: ConnectAdapterInterface = DefaultConnectionPresenter):
         
         dataBaseGateway = DataBaseGateway(dataBaseExternal)
         
         connections = ConnectionUseCases.getAllConnections(dataBaseGateway, senderClient)
         
-        return connections #Adicionar adapter!!
+        adapter =  connectAdapter()
+        
+        return adapter.adaptConnectionsInformation(connections)

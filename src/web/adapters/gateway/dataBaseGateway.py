@@ -28,7 +28,7 @@ class DataBaseGateway(DataBaseGatewayInterface):
         
         id = self._dataBaseExternal.create(conn, "connections")
         
-        connectionDto = ConnectionDTO(id, ip, port, description, token, mqttTopic)
+        connectionDto = ConnectionDTO(id, robotId, ip, port, description, token, mqttTopic)
         
         return connectionDto
         
@@ -66,29 +66,35 @@ class DataBaseGateway(DataBaseGatewayInterface):
         return ConnectionDTO(id, connection.ip, connection.port, connection.description, connection.token, connection.mqttTopic)
     
     def deleteConnection(self, id) -> bool:
-        if self._dataBaseExternal.delete(id, "connections"):
-            return True
-        else:
-            return False
+        
+        connection = self.getConnection(id)
+        
+        try:
+            self._dataBaseExternal.delete(id, "connections")
+            return connection
+        except:
+            raise Exception("Error deleting connection {}".format(id))
     
     #################################################################################################################
     
     def createRobot(self,
-                    typeR: str,
+                    type: str,
                     axis: int,
                     brand: str) -> RobotDTO:
         
         robot = {
-            "type": typeR,
+            "type": type,
             "axis": axis,
             "brand": brand
         }
         
         id = self._dataBaseExternal.create(robot, "robots")
         
-        RobotDTO = RobotDTO(id, brand, typeR, axis, brand)
+        print(id)
         
-        return RobotDTO
+        robotDTO = RobotDTO(id, type, axis, brand)
+        
+        return robotDTO
     
     
     
@@ -127,7 +133,11 @@ class DataBaseGateway(DataBaseGatewayInterface):
         return RobotDTO
 
     def deleteRobot(self, id) -> bool:
-        if self._dataBaseExternal.delete(id, "robots"):
-            return True
-        else:
-            return False
+        
+        robot = self.getRobot(id)
+        
+        try:
+            self._dataBaseExternal.delete(id, "robots")
+            return robot
+        except:
+            raise Exception("Error deleting robot {}".format(id))
