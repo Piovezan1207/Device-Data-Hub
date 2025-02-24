@@ -7,6 +7,7 @@ class RobotUseCase:
     
     @staticmethod
     def createRobot(robotDTO: RobotDTO, request: Request):
+
         robot = Robot(robotDTO.brand, 
                       robotDTO.description, 
                       robotDTO.axis_number,

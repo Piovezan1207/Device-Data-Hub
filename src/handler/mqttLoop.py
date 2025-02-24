@@ -103,6 +103,8 @@ def sendRobotPosition(client):
         
 
     while True:
+        robot_information = RobotController.getRobotInfo(newRobot, robotConnector, robotAdapter)
+        print(robot_information)
         try:
             robot_information = RobotController.getRobotInfo(newRobot, robotConnector, robotAdapter)
         except:

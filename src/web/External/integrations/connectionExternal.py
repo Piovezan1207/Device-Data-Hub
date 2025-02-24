@@ -6,7 +6,6 @@ Implementa a arquitetura de coleta de dados dos rbôs.
 
 from src.web.pkg.interfaces.externalInterfaces import ConnectionExternalInterface
 
-
 from src.robot.pkg.DTO.RobotDTO import RobotDTO
 
 from src.robot.adapters.controller.RobotController import RobotController

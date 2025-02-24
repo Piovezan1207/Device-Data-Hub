@@ -4,9 +4,9 @@ class Robot:
     def __init__(self, brand: str, 
                  description: str,
                  axis_number: int,
+                 position: list[int],
                  claw: int,
-                 request: Request,
-                 position: list = []):
+                 request: Request):
         
         # if len(position) != axis_number:
         #     raise ValueError("The position list must match the number of axes.")
