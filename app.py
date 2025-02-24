@@ -1,4 +1,4 @@
-from flask import Flask, jsonify, request
+from flask import Flask, jsonify, request, render_template, redirect
 from flask_sqlalchemy import SQLAlchemy
 from flask_migrate import Migrate
 
@@ -32,23 +32,26 @@ migrate = Migrate(app, db)
 
 
 
-def startAllThreads():
+# def startAllThreads():
 
-    # time.sleep(5)
-    
-    mqttThread, mqttClient = startMqttThread()
+# time.sleep(5)
 
-    # Configuração do banco de dados
-    engine = create_engine('sqlite:///instance/banco.db')  # Ou o banco que você estiver usando
-    Base.metadata.create_all(engine)  # Cria as tabelas
-    Session = sessionmaker(bind=engine)
-    session = Session()
-    connections = session.query(Connection).all()
-    for connection in connections:
-        if not connection.id in robotThreadList:
-            robotThreadList[connection.id] = createRobotThread(connection, session.query(Robot).filter(Robot.id == connection.robot_id).first(), mqttClient)
-            robotThreadList[connection.id].start()
-    session.close()  
+
+#DESCOMENTAR DEPOIS QUE TERMONAR O HTML
+
+mqttThread, mqttClient = startMqttThread()
+
+# Configuração do banco de dados
+engine = create_engine('sqlite:///instance/banco.db')  # Ou o banco que você estiver usando
+Base.metadata.create_all(engine)  # Cria as tabelas
+Session = sessionmaker(bind=engine)
+session = Session()
+connections = session.query(Connection).all()
+for connection in connections:
+    if not connection.id in robotThreadList:
+        robotThreadList[connection.id] = createRobotThread(connection, session.query(Robot).filter(Robot.id == connection.robot_id).first(), mqttClient)
+        robotThreadList[connection.id].start()
+session.close()  
 
 
     
@@ -64,16 +67,65 @@ def seed():
     db.session.commit()
     print("Seed data inserted!")
 
+@app.route('/connection')
+def connection():
+    robots = db.session.query(Robot).all()  # Obtém todos os robôs
+    robots_list = []
+    for robot in robots:
+        robots_list.append({
+            'id': robot.id,
+            'type': robot.type,
+            'axis': robot.axis,
+            'brand': robot.brand
+        })
+    
+    return render_template('/connections/index.html', robots=robots_list)
+
+@app.route('/connection', methods=['POST'])
+def connectionPost():
+    print(request.form.get('robotIp'),
+          request.form.get('robotPort'),
+          request.form.get('robotDescription'),
+          request.form.get('robotPassword'),
+          request.form.get('robotMqttTopic'))
+    return redirect('/')
 
 @app.route('/')
 def home():
-    return "Servidor Flask está rodando!"
+    
+    robots = db.session.query(Robot).all()  # Obtém todos os robôs
+    robots_list = {}
+    for robot in robots:
+        robots_list[robot.id]  = {
+            'id': robot.id,
+            'type': robot.type,
+            'axis': robot.axis,
+            'brand': robot.brand
+        }
+        
+    print(robots_list)
+    
+    connections = db.session.query(Connection).all()
+    connections_list = []
+    for connection in connections:
+        connections_list.append({
+            'id': connection.id,
+            'robot_id': robots_list[connection.robot_id],
+            'ip': connection.ip,
+            'port': connection.port,
+            'description': connection.description,
+            'number': connection.number,
+            'password': connection.password,
+            'topic': connection.topic
+        })
+    
+    return render_template("/home/index.html",  connections=connections_list)
+    # return "Servidor Flask está rodando!"
 
 @app.route('/robots', methods=['GET'])
 def get_robots():
     robots = db.session.query(Robot).all()  # Obtém todos os robôs
     robots_list = []
-
     for robot in robots:
         robots_list.append({
             'id': robot.id,
@@ -100,7 +152,6 @@ def get_robot(id):
 def get_connections():
     connections = db.session.query(Connection).all()
     connections_list = []
-    
     for connection in connections:
         connections_list.append({
             'id': connection.id,
@@ -158,5 +209,5 @@ def delete_connection(id):
 if __name__ == '__main__':
     # thread = threading.Thread(target=startAllThreads, daemon=True)
     # thread.start()  # Inicia o script antes do Flask rodar
-    startAllThreads()
+    # startAllThreads()
     app.run(debug=False)

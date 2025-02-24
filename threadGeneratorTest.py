@@ -7,15 +7,15 @@ from src.controller.RobotController import RobotController
 
 from src.External.yaskawaHC10Connection import yaskawaHC10Connection
 from src.External.yaskawaGP8Connection import yaskawaGP8Connection
-from src.adapter.YaskawaRobotAdapter import YaskawaRobotAdapter
+from src.adapters.YaskawaRobotAdapter import YaskawaRobotAdapter
 
 from src.External.MIRConnection import MIRConnection
-from src.adapter.MirAdapter import MirAdapter
+from src.adapters.MirAdapter import MirAdapter
 
 from src.DTO.RequestDTO import RequestDTO
 
 from src.controller.RequestController import RequestController
-from src.adapter.RequestDashboardAdapter import RequestDashboardAdapter
+from src.adapters.RequestDashboardAdapter import RequestDashboardAdapter
 import json
 
 import threading

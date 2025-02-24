@@ -1,21 +1,22 @@
 import paho.mqtt.client as mqtt
 import json
 
-from ..DTO.RobotDTO import RobotDTO
+from src.robot.pkg.DTO.RobotDTO import RobotDTO
 
-from ..controller.RobotController import RobotController
+from src.robot.adapters.controller.RobotController import RobotController
 
-from ..External.yaskawaHC10Connection import yaskawaHC10Connection
-from ..External.yaskawaGP8Connection import yaskawaGP8Connection
-from ..adapter.YaskawaRobotAdapter import YaskawaRobotAdapter
+from src.robot.External.integrations.yaskawaHC10Connection import yaskawaHC10Connection
+from src.robot.External.integrations.yaskawaGP8Connection import yaskawaGP8Connection
+from src.robot.adapters.presenter.YaskawaRobotAdapter import YaskawaRobotAdapter
 
-from ..External.MIRConnection import MIRConnection
-from ..adapter.MirAdapter import MirAdapter
 
-from ..DTO.RequestDTO import RequestDTO
+from src.robot.External.integrations.MIRConnection import MIRConnection
+from src.robot.adapters.presenter.MirAdapter import MirAdapter
 
-from ..controller.RequestController import RequestController
-from ..adapter.RequestDashboardAdapter import RequestDashboardAdapter
+from src.robot.pkg.DTO.RequestDTO import RequestDTO
+
+from src.robot.adapters.controller.RobotController import RobotController
+from src.robot.adapters.presenter.RequestDashboardAdapter import RequestDashboardAdapter
 import json
 
 from dotenv import load_dotenv
@@ -41,7 +42,7 @@ ROBOT_BRAND=os.getenv("ROBOT_BRAND")
 DASHBOARD_TOPIC=os.getenv("DASHBOARD_TOPIC")
 ROBOT_PASSWORD=os.getenv("ROBOT_PASSWORD")
 
-if ROBOT_TYPE not in ["MIR100", "YASKAWA"]: 
+if ROBOT_TYPE not in ["MIR100", "HC10", "GP8"]: 
     print("ROBOT_TYPE unknown")
     exit()
 
