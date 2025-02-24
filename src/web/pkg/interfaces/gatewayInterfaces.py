@@ -1,7 +1,7 @@
 from abc import ABC, abstractmethod
 
 from src.web.core.entities.Connection import Connection
-from src.web.pkg.DTO import ConnectionDTO
+from src.web.pkg.DTO.connectionDTO import ConnectionDTO
 
 from src.web.pkg.DTO.RobotDTO import RobotDTO
 

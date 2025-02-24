@@ -23,7 +23,7 @@ class Connection(Base):
     ip = Column(String(15), nullable=False)
     port = Column(Integer, nullable=False)
     description = Column(String(256), nullable=True)
-    number = Column(String(64), nullable=True)
+    # number = Column(String(64), nullable=True)
     password = Column(String(128), nullable=True)
 
     # Relacionamento com a tabela de robôs

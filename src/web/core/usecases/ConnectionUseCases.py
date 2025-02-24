@@ -16,8 +16,8 @@ class ConnectionUseCases:
                 token: str, 
                 mqttTopic: str, 
                 robotId: int, 
-                connectionExternal : ConnectionExternalInterface,
-                dataBaseGateway: DataBaseGatewayInterface) -> Connection:
+                dataBaseGateway: DataBaseGatewayInterface,
+                senderClient) -> Connection:
         
         
         robot= RobotUseCases.getRobot(robotId, dataBaseGateway)
@@ -27,15 +27,14 @@ class ConnectionUseCases:
         
         connectionDto = dataBaseGateway.createConnection(ip, port, description, token, mqttTopic, robotId)
         
-        connection = ConnectionUseCases.DtoToEntitie(connectionDto, robot=robot, sender=None) #Adiciona objeto MQTT no sender!
+        connection = ConnectionUseCases.DtoToEntitie(connectionDto, robot=robot, sender=senderClient) #Adiciona objeto MQTT no sender!
 
-        connection = connectionExternal.createConnection(connection)
         return connection
     
     
     
     @staticmethod
-    def getConnection(id: int, dataBaseGateway: DataBaseGatewayInterface) -> Connection:
+    def getConnection(id: int, dataBaseGateway: DataBaseGatewayInterface, senderClient) -> Connection:
         connectionDto = dataBaseGateway.getConnection(id)
         
         if connectionDto is None:
@@ -43,12 +42,12 @@ class ConnectionUseCases:
         
         robot = RobotUseCases.getRobot(connectionDto.robotId, dataBaseGateway)
         
-        connection = ConnectionUseCases.DtoToEntitie(connectionDto, robot=robot, sender=None) #Adiciona objeto MQTT no sender!
-        
+        connection = ConnectionUseCases.DtoToEntitie(connectionDto, robot=robot, sender=senderClient) #Adiciona objeto MQTT no sender!
+
         return connection
     
     @staticmethod   
-    def getAllConnections(dataBaseGateway: DataBaseGatewayInterface) -> list[Connection]:
+    def getAllConnections(dataBaseGateway: DataBaseGatewayInterface, senderClient) -> list[Connection]:
         
         connectionDtos =  dataBaseGateway.getAllConnections()
     
@@ -56,39 +55,40 @@ class ConnectionUseCases:
         
         for connectionDto in connectionDtos:
             robot = RobotUseCases.getRobot(connectionDto.robotId, dataBaseGateway)
-            connection = ConnectionUseCases.DtoToEntitie(connectionDto, robot=robot, sender=None) #Adiciona objeto MQTT no sender!
+            connection = ConnectionUseCases.DtoToEntitie(connectionDto, robot=robot, sender=senderClient) #Adiciona objeto MQTT no sender!
             connections.append(connection)
         
         return connections
     
     @staticmethod
-    def runConnection(id: int, connectionExternal: ConnectionExternalInterface, 
-                      dataBaseGateway: DataBaseGatewayInterface) -> Connection:
+    def runConnection(connection: Connection, connectionExternal: ConnectionExternalInterface) -> Connection:
         
-        connection = ConnectionUseCases.getConnection(id, dataBaseGateway)
         connection = connectionExternal.createConnection(connection)
-        
+        connection.status = "connected"
         return connection
     
-    @staticmethod
-    def runAllConnections(connectionExternal: ConnectionExternalInterface, 
-                          dataBaseGateway: DataBaseGatewayInterface) -> list[Connection]:
-        
-        connections = ConnectionUseCases.getAllConnections(dataBaseGateway)
-        
-        for connection in connections:
-            connection = connectionExternal.createConnection(connection)
-        
-        return connections
     
     @staticmethod
-    def closeConnection(id: int, connectionExternal: ConnectionExternalInterface, 
-                        dataBaseGateway: DataBaseGatewayInterface) -> bool:
+    def closeConnection(id: int, dataBaseGateway: DataBaseGatewayInterface, 
+                        connectionExternal: ConnectionExternalInterface) -> bool:
         
         connection = ConnectionUseCases.getConnection(id, dataBaseGateway)
         connection = connectionExternal.closeConnection(connection)
+        connection.status = "disconnected"
+        return connection
+    
+    @staticmethod
+    def deleteConnection(id: int, dataBaseGateway: DataBaseGatewayInterface, connectionExternal: ConnectionExternalInterface) -> bool:
+        connection = ConnectionUseCases.closeConnection(id, dataBaseGateway, connectionExternal)
+        
+        delete =  dataBaseGateway.deleteConnection(id)
+        
+        if not delete:
+            raise Exception("Connection not found")
         
         return connection
+        
+        
     
     @staticmethod
     def DtoToEntitie(connectionDto: ConnectionDTO, robot = None, sender = None) -> Connection:

@@ -1,20 +1,26 @@
 from src.web.pkg.interfaces.externalInterfaces import DataBaseExternalInterface
 
 
-class sqliteDatabase(DataBaseExternalInterface):
+class SqliteDatabase(DataBaseExternalInterface):
     def __init__(self,
                  cursor):
         
         self._cursor = cursor
         
     def get(self, id, table) -> str:
-        self._cursor.execute("SELECT * FROM ? WHERE id = ?", (table, id, ))
+        query = f"SELECT * FROM {table} WHERE id = {id}"
+        self._cursor.execute(query)
         data = self._cursor.fetchall()
-        return data
+        if len(data) == 0:
+            return None
+        return data[0]
     
     def getAll(self, table) -> str:
-        self._cursor.execute("SELECT * FROM ?", (table, ))
+        query = f"SELECT * FROM {table}"
+        self._cursor.execute(query)
         data = self._cursor.fetchall()
+        if len(data) == 0:
+            return None
         return data
     
     def create(self, data, table) -> str:

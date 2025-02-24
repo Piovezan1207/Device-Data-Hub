@@ -4,7 +4,7 @@ from src.web.pkg.interfaces.externalInterfaces import DataBaseExternalInterface
 from src.web.pkg.DTO.RobotDTO import RobotDTO
 from src.web.pkg.DTO.connectionDTO import ConnectionDTO
 
-class dataBaseGateway(DataBaseGatewayInterface):
+class DataBaseGateway(DataBaseGatewayInterface):
     def __init__(self,
                  dataBaseExternal: DataBaseExternalInterface):
         self._dataBaseExternal = dataBaseExternal
@@ -35,9 +35,12 @@ class dataBaseGateway(DataBaseGatewayInterface):
         
         
     def getConnection(self, id) -> ConnectionDTO:
-        conn = self._dataBaseExternal.get(id, "connections")
+        connections = self._dataBaseExternal.get(id, "connections")
         
-        connectionDto = ConnectionDTO(conn["id"], conn["ip"], conn["port"], conn["description"], conn["token"], conn["mqttTopic"])
+        if connections is None:
+            raise Exception("Connection {} not found".format(id))
+             
+        connectionDto = ConnectionDTO(connections[0], connections[1], connections[2], connections[3], connections[4], connections[5], connections[6])
         
         return connectionDto
     
@@ -46,7 +49,10 @@ class dataBaseGateway(DataBaseGatewayInterface):
     def getAllConnections(self) -> list[ConnectionDTO]:
         connections = self._dataBaseExternal.getAll("connections")
         
-        return [ConnectionDTO(conn["id"], conn["ip"], conn["port"], conn["description"], conn["token"], conn["mqttTopic"]) for conn in connections]
+        if connections is None:
+            raise Exception("No connections found.")
+        
+        return [ConnectionDTO(connection[0], connection[1], connection[2], connection[3], connection[4], connection[5], connection[6]) for connection in connections]
      
     def updateConnection(self, id, connection) -> ConnectionDTO:
         conn = {
@@ -80,7 +86,7 @@ class dataBaseGateway(DataBaseGatewayInterface):
         
         id = self._dataBaseExternal.create(robot, "robots")
         
-        RobotDTO = RobotDTO(id, typeR, axis, brand)
+        RobotDTO = RobotDTO(id, brand, typeR, axis, brand)
         
         return RobotDTO
     
@@ -89,7 +95,10 @@ class dataBaseGateway(DataBaseGatewayInterface):
     def getRobot(self, id) -> RobotDTO:
         robot = self._dataBaseExternal.get(id, "robots")
         
-        RobotDto = RobotDTO(robot["id"], robot["type"], robot["axis"], robot["brand"])
+        if robot is None:
+            raise Exception("Robot {} not found".format(id))
+        
+        RobotDto = RobotDTO(robot[0], robot[1], robot[2], robot[3])
         
         return RobotDto
     
@@ -98,7 +107,10 @@ class dataBaseGateway(DataBaseGatewayInterface):
     def getAllRobots(self) -> list[RobotDTO]:
         robots = self._dataBaseExternal.getAll("robots")
         
-        return [RobotDTO(robot["id"], robot["type"], robot["axis"], robot["brand"]) for robot in robots]
+        if robots is None:
+            raise Exception("No robots found.")
+        
+        return [RobotDTO(robot[0], robot[1], robot[2], robot[3]) for robot in robots]
     
  
     def updateRobot(self, id, robot) -> RobotDTO:

@@ -1,5 +1,4 @@
-from src.web.core.entities.Thread import Thread
-from web.core.entities.Sender import Sender
+from src.web.core.entities.Sender import Sender
 from src.web.core.entities.Connection import Connection
 from src.web.core.entities.Robot import Robot
 

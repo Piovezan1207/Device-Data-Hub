@@ -4,5 +4,5 @@ from dataclasses import dataclass
 class RobotDTO: 
     id: int   
     type: str
-    brand: str 
     axis: int
+    brand: str 

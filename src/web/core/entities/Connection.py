@@ -1,5 +1,5 @@
 from src.robot.core.entities.Robot import Robot
-from web.core.entities.Sender import Sender
+from src.web.core.entities.Sender import Sender
 
 class Connection:
     def __init__(self, id: int,

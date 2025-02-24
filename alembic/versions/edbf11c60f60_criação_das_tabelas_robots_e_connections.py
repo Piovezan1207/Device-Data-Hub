@@ -11,7 +11,7 @@ from sqlalchemy.orm import sessionmaker
 
 from alembic import op
 import sqlalchemy as sa
-from models import Robot
+from models import Robot, Connection
 
 
 # revision identifiers, used by Alembic.
@@ -38,7 +38,7 @@ def upgrade() -> None:
     sa.Column('ip', sa.String(length=15), nullable=False),
     sa.Column('port', sa.Integer(), nullable=False),
     sa.Column('description', sa.String(length=256), nullable=True),
-    sa.Column('number', sa.String(length=64), nullable=True),
+    # sa.Column('number', sa.String(length=64), nullable=True),
     sa.Column('password', sa.String(length=128), nullable=True),
     sa.ForeignKeyConstraint(['robot_id'], ['robots.id'], ondelete='CASCADE'),
     sa.PrimaryKeyConstraint('id')
@@ -61,6 +61,24 @@ def upgrade() -> None:
     for data in robots_data:
         robot = Robot(**data)  # Criar o objeto Robot
         session.add(robot)
+
+    session.commit()  # Commit das inserções
+    
+    bind = op.get_bind()
+    session = sessionmaker(bind=bind)()
+
+    # Dados a serem inseridos
+    conn_data = [
+        {'robot_id': '1', 'topic': '/teste/2', 'ip': '0.0.0.0', 'port': 502, 'description': 'teste descrição', 'password': '1234'},
+        {'robot_id': '2', 'topic': '/teste/3', 'ip': '1.0.2.0', 'port': 503, 'description': 'Main control testeteste', 'password': '123467'},
+        
+
+    ]
+
+    # Inserir os dados
+    for data in conn_data:
+        conn = Connection(**data)  # Criar o objeto Robot
+        session.add(conn)
 
     session.commit()  # Commit das inserções
 
