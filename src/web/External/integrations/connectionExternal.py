@@ -39,7 +39,9 @@ class ThreadManager:
         return True
     
     def stopThread(self, id):
+        print(id)
         self._threadList[id].stop()
+        self._threadList[id].join()
         self._threadList.pop(id)
         return True
     
@@ -51,8 +53,27 @@ class ThreadManager:
         
     def getThread(self, id):
         return self._threadList[id]
-
     
+    def getStatus(self, id):
+        if id in self._threadList:
+            status = {
+                "running": self._threadList[id]._runningStatus,
+                "connected": self._threadList[id]._connectedStatus,
+                "error": self._threadList[id]._errorStatus,
+                "message": self._threadList[id]._messageStatus
+            }
+            
+            return status
+        
+        else:
+             status = {
+                "running": False,
+                "connected": False,
+                "error": False,
+                "message": "Thread not running."
+            }
+
+        return status
         
 
         
@@ -78,26 +99,45 @@ class getDataThread(threading.Thread):
         self.robotAdapter = robotAdapter
         
         self.newRobot = RobotDTO(ROBOT_BRAND, ROBOT_DESCRIPTION, ROBOT_AXIS_NUMBER)
+        
+        self._runningStatus = False
+        self._connectedStatus = False
+        self._errorStatus = False
+        self._messageStatus = "Thread created."
 
     def run(self):
         print("Iniciando thread...", self)
+        self._runningStatus = True
+        self._messageStatus = "Running!"
         while self.running:  # Verifica a flag
             # print(self.running, self)
             self.sendRobotPosition()
+        
+        self._runningStatus = False
     
     def stop(self):
         print("Parando a thread.", self)
-        self.running = False  # Altera a flag para parar o loop        
+        self.running = False  # Altera a flag para parar o loop     
+        self._runningStatus = False  
     
     def sendRobotPosition(self):
-        # try:
+        try:
             robot_information = RobotController.getRobotInfo(self.newRobot, self.robotConnector, self.robotAdapter)
-            print(robot_information)
-            # if self.client.is_connected():
-            #     # print("Estou conectado, publicando...", self.ROBOT_POSITION_TOPIC , robot_information)
-            #     self.client.publish(self.ROBOT_POSITION_TOPIC , robot_information)
-        # except:
-        #     pass
+            if robot_information:
+                self._connectedStatus = True
+            
+            if self.client.is_connected():
+                # print("Estou conectado, publicando...", self.ROBOT_POSITION_TOPIC , robot_information)
+                self.client.publish(self.ROBOT_POSITION_TOPIC , robot_information)
+            else:
+                self._errorStatus = True
+                self._messageStatus = str("Sender não conectado.")
+            self._errorStatus = False
+        except Exception as e:
+            # print(e)
+            self._connectedStatus = False
+            self._errorStatus = True
+            self._messageStatus = str(e)
 
 
 class connectionExternal(ConnectionExternalInterface):
@@ -132,7 +172,7 @@ class connectionExternal(ConnectionExternalInterface):
         robotThread = getDataThread(mqttSender, robot.brand, description, robot.axis, topic, password, robotConnector, robotAdapter)
         self._manager.addThread(robotThread, connection.id)
 
-        connection.status = "running"
+        # connection.status = "running"
             
         return connection
     
@@ -143,8 +183,9 @@ class connectionExternal(ConnectionExternalInterface):
     
     def closeConnection(self, id):
         self._manager.stopThread(id)
+        # status = self._manager.getStatus(id)
         return True
     
-    def getConnectionData(self, id):
-        raise Exception("Not implemented", "getConnectionData")
-        return True
+    def getConnectionStatus(self, id):
+        status = self._manager.getStatus(id)
+        return status

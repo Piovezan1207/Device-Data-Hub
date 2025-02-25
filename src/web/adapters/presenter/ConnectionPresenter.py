@@ -16,7 +16,12 @@ class DefaultConnectionPresenter(ConnectAdapterInterface):
             "mqttTopic": connection.mqttTopic,
             "robot": connection.robot,
             "sender": connection.sender,
-            "status": connection.status
+            "status": {
+                "running" : connection.status.running,
+                "connected" : connection.status.connected,
+                "error" : connection.status.error,
+                "message" : connection.status.message
+            }
             }
         }
         
@@ -34,7 +39,12 @@ class DefaultConnectionPresenter(ConnectAdapterInterface):
                     "mqttTopic": connection.mqttTopic,
                     "robot": connection.robot,
                     "sender": connection.sender,
-                    "status": connection.status
+                    "status": {
+                                "running" : connection.status.running,
+                                "connected" : connection.status.connected,
+                                "error" : connection.status.error,
+                                "message" : connection.status.message
+                            }
                 } for connection in connections
             ]
         }

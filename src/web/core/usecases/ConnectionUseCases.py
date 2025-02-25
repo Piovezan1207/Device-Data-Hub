@@ -1,4 +1,5 @@
 from src.web.core.entities.Connection import Connection
+from src.web.core.entities.Status import Status
 from src.web.pkg.DTO.connectionDTO  import ConnectionDTO
 
 from src.web.pkg.interfaces.externalInterfaces import ConnectionExternalInterface
@@ -34,20 +35,21 @@ class ConnectionUseCases:
     
     
     @staticmethod
-    def getConnection(id: int, dataBaseGateway: DataBaseGatewayInterface, senderClient) -> Connection:
+    def getConnection(id: int, dataBaseGateway: DataBaseGatewayInterface, senderClient, connectionExternal: ConnectionExternalInterface) -> Connection:
         connectionDto = dataBaseGateway.getConnection(id)
         
         if connectionDto is None:
             raise Exception("Connection not found")
         
         robot = RobotUseCases.getRobot(connectionDto.robotId, dataBaseGateway)
+        status = ConnectionUseCases.getConnectionStatus(connectionDto.id, connectionExternal)
         
-        connection = ConnectionUseCases.DtoToEntitie(connectionDto, robot=robot, sender=senderClient) #Adiciona objeto MQTT no sender!
+        connection = ConnectionUseCases.DtoToEntitie(connectionDto, robot=robot, sender=senderClient, status=status) #Adiciona objeto MQTT no sender!
 
         return connection
     
     @staticmethod   
-    def getAllConnections(dataBaseGateway: DataBaseGatewayInterface, senderClient) -> list[Connection]:
+    def getAllConnections(dataBaseGateway: DataBaseGatewayInterface, senderClient, connectionExternal: ConnectionExternalInterface) -> list[Connection]:
         
         connectionDtos =  dataBaseGateway.getAllConnections()
     
@@ -55,7 +57,8 @@ class ConnectionUseCases:
         
         for connectionDto in connectionDtos:
             robot = RobotUseCases.getRobot(connectionDto.robotId, dataBaseGateway)
-            connection = ConnectionUseCases.DtoToEntitie(connectionDto, robot=robot, sender=senderClient) #Adiciona objeto MQTT no sender!
+            status = ConnectionUseCases.getConnectionStatus(connectionDto.id, connectionExternal)
+            connection = ConnectionUseCases.DtoToEntitie(connectionDto, robot=robot, sender=senderClient, status=status) #Adiciona objeto MQTT no sender!
             connections.append(connection)
         
         return connections
@@ -64,17 +67,18 @@ class ConnectionUseCases:
     def runConnection(connection: Connection, connectionExternal: ConnectionExternalInterface) -> Connection:
         
         connection = connectionExternal.createConnection(connection)
-        connection.status = "connected"
+        # connection.status = "connected"
         return connection
     
     
     @staticmethod
-    def closeConnection(id: int, dataBaseGateway: DataBaseGatewayInterface, 
-                        connectionExternal: ConnectionExternalInterface) -> bool:
+    def closeConnection(connection: Connection, connectionExternal: ConnectionExternalInterface) -> bool:
         
-        connection = ConnectionUseCases.getConnection(id, dataBaseGateway)
-        connection = connectionExternal.closeConnection(connection)
-        connection.status = "disconnected"
+        # connection = ConnectionUseCases.getConnection(id, dataBaseGateway)
+        status = connectionExternal.closeConnection(connection.id)
+        status = ConnectionUseCases.getConnectionStatus(connection.id, connectionExternal)
+        connection = ConnectionUseCases.DtoToEntitie(connection, robot=connection.robot, sender=connection.sender, status=status)
+        
         return connection
     
     @staticmethod
@@ -88,10 +92,19 @@ class ConnectionUseCases:
         
         return connection
         
+    
+    @staticmethod
+    def getConnectionStatus(id: int, connectionExternal: ConnectionExternalInterface) -> Status:
+        
+        statusObj =  connectionExternal.getConnectionStatus(id)
+        
+        status = Status(statusObj["running"], statusObj["connected"], statusObj["error"], statusObj["message"])
+        
+        return status
         
     
     @staticmethod
-    def DtoToEntitie(connectionDto: ConnectionDTO, robot = None, sender = None) -> Connection:
+    def DtoToEntitie(connectionDto: ConnectionDTO, robot = None, sender = None, status = None) -> Connection:
         return Connection(connectionDto.id, 
                           connectionDto.ip, 
                           connectionDto.port, 
@@ -99,4 +112,5 @@ class ConnectionUseCases:
                           connectionDto.token, 
                           connectionDto.mqttTopic, 
                           robot, 
-                          sender)
+                          sender,
+                          status)

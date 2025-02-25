@@ -28,7 +28,7 @@ class DataBaseGateway(DataBaseGatewayInterface):
         
         id = self._dataBaseExternal.create(conn, "connections")
         
-        connectionDto = ConnectionDTO(id, robotId, ip, port, description, token, mqttTopic)
+        connectionDto = ConnectionDTO(id=id, robotId=robotId, ip=ip, port=port, description=description, token=token, mqttTopic=mqttTopic)
         
         return connectionDto
         

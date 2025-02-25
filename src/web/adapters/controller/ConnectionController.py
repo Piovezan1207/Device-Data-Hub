@@ -18,7 +18,7 @@ class ConnectionController:
         
         dataBaseGateway = DataBaseGateway(dataBaseExternal)
         
-        connections  = ConnectionUseCases.getAllConnections(dataBaseGateway, senderClient)
+        connections  = ConnectionUseCases.getAllConnections(dataBaseGateway, senderClient, connectionExternal)
 
         newConnections = []
         
@@ -61,26 +61,55 @@ class ConnectionController:
         
         adapter =  connectAdapter()
         
+        print(newConnection.status, newConnection.status.connected)
+        
         return adapter.adaptConnectionInformation(newConnection)
     
     @staticmethod
-    def getConnection(id: int, dataBaseExternal: DataBaseExternalInterface, senderClient, connectAdapter: ConnectAdapterInterface = DefaultConnectionPresenter):
+    def getConnection(id: int, dataBaseExternal: DataBaseExternalInterface, senderClient, connectionExternal: ConnectionExternalInterface, connectAdapter: ConnectAdapterInterface = DefaultConnectionPresenter):
         
         dataBaseGateway = DataBaseGateway(dataBaseExternal)
         
-        connection = ConnectionUseCases.getConnection(id, dataBaseGateway, senderClient)
+        connection = ConnectionUseCases.getConnection(id, dataBaseGateway, senderClient, connectionExternal)
         
         adapter =  connectAdapter()
         
         return adapter.adaptConnectionInformation(connection)
     
     @staticmethod
-    def getAllConnections(dataBaseExternal: DataBaseExternalInterface, senderClient, connectAdapter: ConnectAdapterInterface = DefaultConnectionPresenter):
+    def getAllConnections(dataBaseExternal: DataBaseExternalInterface, senderClient, connectionExternal: ConnectionExternalInterface, connectAdapter: ConnectAdapterInterface = DefaultConnectionPresenter):
         
         dataBaseGateway = DataBaseGateway(dataBaseExternal)
         
-        connections = ConnectionUseCases.getAllConnections(dataBaseGateway, senderClient)
+        connections = ConnectionUseCases.getAllConnections(dataBaseGateway, senderClient, connectionExternal)
         
         adapter =  connectAdapter()
         
         return adapter.adaptConnectionsInformation(connections)
+    
+
+    @staticmethod
+    def runConnection(id: int, dataBaseExternal: DataBaseExternalInterface, senderClient, connectionExternal: ConnectionExternalInterface, connectAdapter: ConnectAdapterInterface = DefaultConnectionPresenter):
+        
+        dataBaseGateway = DataBaseGateway(dataBaseExternal)
+        
+        connection = ConnectionUseCases.getConnection(id, dataBaseGateway, senderClient, connectionExternal)
+        
+        connection = ConnectionUseCases.runConnection(connection, connectionExternal)
+        
+        adapter =  connectAdapter()
+        
+        return adapter.adaptConnectionInformation(connection)
+    
+    @staticmethod
+    def stopConnection(id: int, dataBaseExternal: DataBaseExternalInterface, senderClient, connectionExternal: ConnectionExternalInterface, connectAdapter: ConnectAdapterInterface = DefaultConnectionPresenter):
+        
+        dataBaseGateway = DataBaseGateway(dataBaseExternal)
+        
+        connection = ConnectionUseCases.getConnection(id, dataBaseGateway, senderClient, connectionExternal)
+        print("ue" , connection, "Ue")
+        connection = ConnectionUseCases.closeConnection(connection, connectionExternal)
+        
+        adapter =  connectAdapter()
+        
+        return adapter.adaptConnectionInformation(connection)

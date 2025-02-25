@@ -16,7 +16,7 @@ class ConnectionExternalInterface():
         pass
     
     @abstractmethod
-    def getConnectionData(self, id) -> str:
+    def getConnectionStatus(self, id) -> object:
         pass
 
     

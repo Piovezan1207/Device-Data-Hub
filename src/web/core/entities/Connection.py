@@ -1,5 +1,6 @@
 from src.robot.core.entities.Robot import Robot
 from src.web.core.entities.Sender import Sender
+from src.web.core.entities.Status import Status
 
 class Connection:
     def __init__(self, id: int,
@@ -9,7 +10,8 @@ class Connection:
                     token: str,
                     mqttTopic: str,
                     robot: Robot,
-                    sender: Sender
+                    sender: Sender,
+                    status: Status = None
                     ):
 
         self._id = id
@@ -20,8 +22,11 @@ class Connection:
         self._mqttTopic = mqttTopic
         self._robot = robot
         self._sender = sender
-        self._status = "disconnected"
-        
+        if status is None:
+            self._status = Status(False, False, False, "")
+        else:
+            self._status = status
+
     
     @property
     def id(self) -> int:
@@ -63,5 +68,12 @@ class Connection:
     def status(self, status: str):
         self._status = status
     
+    @property
+    def status(self) -> Status:
+        return self._status 
+    
+    @status.setter
+    def status(self, status: Status):
+        self._status = status
 
     
