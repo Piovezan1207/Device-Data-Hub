@@ -8,7 +8,7 @@ from src.web.pkg.interfaces.externalInterfaces import DataBaseExternalInterface
 from src.web.pkg.interfaces.AdapterInterfaces import RobotAdapterInterface
 from src.web.adapters.presenter.RobotPresenter import DefaultRobotPresenter
 
-class robotController:
+class RobotController:
     @staticmethod
     def getAllRobots(dataBaseExternal: DataBaseExternalInterface, robotAdapter: RobotAdapterInterface = DefaultRobotPresenter):
         

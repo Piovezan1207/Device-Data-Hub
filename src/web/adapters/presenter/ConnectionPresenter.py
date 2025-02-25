@@ -1,20 +1,20 @@
 from src.web.pkg.interfaces.AdapterInterfaces import ConnectAdapterInterface
+# from src.web.pkg.interfaces.AdapterInterfaces import RobotAdapterInterface
 
-
+from src.web.adapters.presenter.RobotPresenter import DefaultRobotPresenter
 class DefaultConnectionPresenter(ConnectAdapterInterface):
     def __init__(self):
-        pass
+        self._robotAdapter = DefaultRobotPresenter()
     
     def adaptConnectionInformation(self, connection):
         data = {
-            "connection" : {
             "id": connection.id,
             "ip": connection.ip,
             "port": connection.port,
             "description": connection.description,
             "token": connection.token,
             "mqttTopic": connection.mqttTopic,
-            "robot": connection.robot,
+            "robot": self._robotAdapter.adaptRobotInformation(connection.robot),
             "sender": connection.sender,
             "status": {
                 "running" : connection.status.running,
@@ -22,22 +22,22 @@ class DefaultConnectionPresenter(ConnectAdapterInterface):
                 "error" : connection.status.error,
                 "message" : connection.status.message
             }
-            }
         }
         
         return data
     
     def adaptConnectionsInformation(self, connections):
         data = {
-            "connections": [
-                {
+
+                "connections":
+                [{
                     "id": connection.id,
                     "ip": connection.ip,
                     "port": connection.port,
                     "description": connection.description,
                     "token": connection.token,
                     "mqttTopic": connection.mqttTopic,
-                    "robot": connection.robot,
+                    "robot": self._robotAdapter.adaptRobotInformation(connection.robot),
                     "sender": connection.sender,
                     "status": {
                                 "running" : connection.status.running,
@@ -45,8 +45,8 @@ class DefaultConnectionPresenter(ConnectAdapterInterface):
                                 "error" : connection.status.error,
                                 "message" : connection.status.message
                             }
-                } for connection in connections
-            ]
+                } for connection in connections]
+            
         }
         
         return data

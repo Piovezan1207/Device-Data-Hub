@@ -6,26 +6,23 @@ class DefaultRobotPresenter(RobotAdapterInterface):
     
     def adaptRobotInformation(self, robot):
         data = {
-            "robot" : { 
             "id": robot.id,
             "type": robot.type,
             "axis": robot.axis,
             "brand": robot.brand
-            }
         }
         
         return data
         
     def adaptRobotsInformation(self, robots):
+        print(robots)
         data = {
-            "robots": [
-                {
+                "robots" : [{
                     "id": robot.id,
                     "type": robot.type,
                     "axis": robot.axis,
                     "brand": robot.brand
-                } for robot in robots
-            ]
+                } for robot in robots]
         }
         
         return data

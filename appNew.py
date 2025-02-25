@@ -1,12 +1,8 @@
 from flask import Flask, jsonify, request, render_template, redirect
-from flask_sqlalchemy import SQLAlchemy
-from flask_migrate import Migrate
 
 from models import Robot, Connection
 
-import threading
-
-import time
+import sqlite3
 
 from mqttThread import startMqttThread
 
@@ -20,66 +16,33 @@ from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 from models import Robot, Connection, Base
 
-  
+######### External 
+#Database
+from src.web.External.datasources.SqliteDatabase import SqliteDatabase
+#Connection with robots
+from src.web.External.integrations.connectionExternal import connectionExternal, ThreadManager
 
+######### Controller arch 
+from src.web.adapters.controller.ConnectionController import ConnectionController
+from src.web.adapters.controller.RobotController import RobotController
+
+
+conn = sqlite3.connect("instance/banco.db", check_same_thread=False)
+database = SqliteDatabase(conn)
+
+manager = ThreadManager()
+externalConnThreads = connectionExternal(manager)
 
 app = Flask(__name__)
-app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///banco.db'  # Use SQLite como exemplo
-app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
-db = SQLAlchemy(app)
-migrate = Migrate(app, db)
-
-
-
-# def startAllThreads():
-
-# time.sleep(5)
-
-
-#DESCOMENTAR DEPOIS QUE TERMONAR O HTML
-
-mqttThread, mqttClient = startMqttThread()
-
-# Configuração do banco de dados
-engine = create_engine('sqlite:///instance/banco.db')  # Ou o banco que você estiver usando
-Base.metadata.create_all(engine)  # Cria as tabelas
-Session = sessionmaker(bind=engine)
-session = Session()
-connections = session.query(Connection).all()
-for connection in connections:
-    if not connection.id in robotThreadList:
-        robotThreadList[connection.id] = createRobotThread(connection, session.query(Robot).filter(Robot.id == connection.robot_id).first(), mqttClient)
-        robotThreadList[connection.id].start()
-session.close()  
-
-
-    
-@app.cli.command("seed")
-def seed():
-    """Popula o banco de dados com dados iniciais."""
-    robots = [
-        Robot(type="MIR100", axis=3, brand="MIR"),
-        Robot(type="HC10", axis=6, brand="WASKAWA")
-    ]
-
-    db.session.add_all(robots)
-    db.session.commit()
-    print("Seed data inserted!")
+robots = RobotController.getAllRobots(database)
+print(robots)
 
 @app.route('/connection')
 def connection():
-    robots = db.session.query(Robot).all()  # Obtém todos os robôs
-    robots_list = []
-    for robot in robots:
-        robots_list.append({
-            'id': robot.id,
-            'type': robot.type,
-            'axis': robot.axis,
-            'brand': robot.brand
-        })
-    
-    return render_template('/connections/index.html', robots=robots_list)
+    robots = RobotController.getAllRobots(database)
+    print(robots)
+    return render_template('/connections/index.html', robots=robots["robots"])
 
 @app.route('/connection', methods=['POST'])
 def connectionPost():
@@ -93,33 +56,14 @@ def connectionPost():
 @app.route('/')
 def home():
     
-    robots = db.session.query(Robot).all()  # Obtém todos os robôs
-    robots_list = {}
-    for robot in robots:
-        robots_list[robot.id]  = {
-            'id': robot.id,
-            'type': robot.type,
-            'axis': robot.axis,
-            'brand': robot.brand
-        }
+    robots = RobotController.getAllRobots(database)
         
-    print(robots_list)
+    print(robots)
     
-    connections = db.session.query(Connection).all()
-    connections_list = []
-    for connection in connections:
-        connections_list.append({
-            'id': connection.id,
-            'robot_id': robots_list[connection.robot_id],
-            'ip': connection.ip,
-            'port': connection.port,
-            'description': connection.description,
-            'number': connection.number,
-            'password': connection.password,
-            'topic': connection.topic
-        })
-    
-    return render_template("/home/index.html",  connections=connections_list)
+    connections = ConnectionController.getAllConnections(database, mqttClient, externalConnThreads)
+
+    print(connections)
+    return render_template("/home/index.html",  connections=connections["connections"], robots=robots)
     # return "Servidor Flask está rodando!"
 
 @app.route('/robots', methods=['GET'])

@@ -1,21 +1,22 @@
 import paho.mqtt.client as mqtt
 import json
 
-from src.DTO.RobotDTO import RobotDTO
+from src.robot.pkg.DTO.RobotDTO import RobotDTO
 
-from src.controller.RobotController import RobotController
 
-from src.External.yaskawaHC10Connection import yaskawaHC10Connection
-from src.External.yaskawaGP8Connection import yaskawaGP8Connection
-from src.adapters.YaskawaRobotAdapter import YaskawaRobotAdapter
+from src.robot.adapters.controller.RobotController import RobotController
 
-from src.External.MIRConnection import MIRConnection
-from src.adapters.MirAdapter import MirAdapter
+from src.robot.External.integrations.yaskawaHC10Connection import yaskawaHC10Connection
+from src.robot.External.integrations.yaskawaGP8Connection import yaskawaGP8Connection
+from src.robot.adapters.presenter.YaskawaRobotAdapter import YaskawaRobotAdapter
 
-from src.DTO.RequestDTO import RequestDTO
+from src.robot.External.integrations.MIRConnection import MIRConnection
+from src.robot.adapters.presenter.MirAdapter import MirAdapter
 
-from src.controller.RequestController import RequestController
-from src.adapters.RequestDashboardAdapter import RequestDashboardAdapter
+from src.robot.pkg.DTO.RequestDTO import RequestDTO
+
+from src.robot.adapters.controller.RequestController import RequestController
+from src.robot.adapters.presenter.RequestDashboardAdapter import RequestDashboardAdapter
 import json
 
 import threading
@@ -94,8 +95,8 @@ def createRobotThread(connection, robot, client):
     ip = connection.ip
     port = connection.port
     description = connection.description
-    number = connection.number
-    password = connection.password
+    # number = connection.number
+    password = connection.token
     if robot.type == "HC10":
         robotConnector = yaskawaHC10Connection(ip, port)
         robotAdapter = YaskawaRobotAdapter()

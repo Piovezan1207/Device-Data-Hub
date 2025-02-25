@@ -21,6 +21,21 @@ from src.robot.adapters.controller.RobotController import RobotController
 
 import threading
 
+#################################################
+import paho.mqtt.client as mqtt
+
+from dotenv import load_dotenv
+import os
+
+load_dotenv()
+
+BROKER_IP=os.getenv("BROKER_IP")
+BROKER_PORT=int(os.getenv("BROKER_PORT"))
+BROKER_USER=os.getenv("BROKER_USER")
+BROKER_PASSWORD=os.getenv("BROKER_PASSWORD")
+
+#################################################
+
 class ThreadManager:
     def __init__(self):
         self._threadList = {}
@@ -74,12 +89,13 @@ class ThreadManager:
             }
 
         return status
-        
+
+
 
         
 class getDataThread(threading.Thread):
     def __init__(self, 
-                client, 
+                BROKER_INFO, 
                 ROBOT_BRAND, 
                 ROBOT_DESCRIPTION, 
                 ROBOT_AXIS_NUMBER, 
@@ -89,7 +105,7 @@ class getDataThread(threading.Thread):
                 robotAdapter):
         super().__init__()
         self.running = True  # Flag de controle
-        self.client =  client
+        # self.client =  client
         self.ROBOT_BRAND =  ROBOT_BRAND
         self.ROBOT_DESCRIPTION =  ROBOT_DESCRIPTION
         self.ROBOT_AXIS_NUMBER =  ROBOT_AXIS_NUMBER
@@ -103,15 +119,45 @@ class getDataThread(threading.Thread):
         self._runningStatus = False
         self._connectedStatus = False
         self._errorStatus = False
-        self._messageStatus = "Thread created."
+        self._messageStatus = "Thread criada."
+        
+        
+        self.BROKER = BROKER_INFO[0]
+        self.PORT =  BROKER_INFO[1]
+        self.client = mqtt.Client()
+        self.client.username_pw_set(BROKER_INFO[2], BROKER_INFO[3])
 
     def run(self):
         print("Iniciando thread...", self)
         self._runningStatus = True
-        self._messageStatus = "Running!"
+        self._messageStatus = "Rodando!"
         while self.running:  # Verifica a flag
-            # print(self.running, self)
-            self.sendRobotPosition()
+            
+            if not self.client.is_connected():
+                try:
+                    self.client.connect(self.BROKER, self.PORT, 60)
+                except:
+                    self._errorStatus = True
+                    self._messageStatus = "Erro ao conectar com o broker."
+                    self._runningStatus = True
+                    self._connectedStatus = False
+                    continue
+            
+            data = self.sendRobotPosition()
+            if not data:
+                continue
+            
+            try:
+                self.client.publish(self.ROBOT_POSITION_TOPIC , data)
+                self._connectedStatus = True
+                self._messageStatus = "Rodando!"
+                self._errorStatus = False
+            except:
+                self._errorStatus = True
+                self._messageStatus = "Erro ao publicar no broker.."
+                self._runningStatus = True
+                self._connectedStatus = False
+                continue
         
         self._runningStatus = False
     
@@ -119,25 +165,18 @@ class getDataThread(threading.Thread):
         print("Parando a thread.", self)
         self.running = False  # Altera a flag para parar o loop     
         self._runningStatus = False  
+        
+        if self.client.is_connected():
+            self.client.disconnect()
     
     def sendRobotPosition(self):
         try:
             robot_information = RobotController.getRobotInfo(self.newRobot, self.robotConnector, self.robotAdapter)
-            if robot_information:
-                self._connectedStatus = True
-            
-            if self.client.is_connected():
-                # print("Estou conectado, publicando...", self.ROBOT_POSITION_TOPIC , robot_information)
-                self.client.publish(self.ROBOT_POSITION_TOPIC , robot_information)
-            else:
-                self._errorStatus = True
-                self._messageStatus = str("Sender não conectado.")
-            self._errorStatus = False
+            return robot_information
         except Exception as e:
-            # print(e)
             self._connectedStatus = False
             self._errorStatus = True
-            self._messageStatus = str(e)
+            self._messageStatus = "Erro ao se comunicar com o robô."
 
 
 class connectionExternal(ConnectionExternalInterface):
@@ -169,7 +208,10 @@ class connectionExternal(ConnectionExternalInterface):
         else:
             raise Exception("Robot not found")
         
-        robotThread = getDataThread(mqttSender, robot.brand, description, robot.axis, topic, password, robotConnector, robotAdapter)
+        BROKER_INFO = [BROKER_IP, BROKER_PORT, BROKER_USER, BROKER_PASSWORD]
+        
+        # robotThread = getDataThread(mqttSender, robot.brand, description, robot.axis, topic, password, robotConnector, robotAdapter)
+        robotThread = getDataThread(BROKER_INFO, robot.brand, description, robot.axis, topic, password, robotConnector, robotAdapter)
         self._manager.addThread(robotThread, connection.id)
 
         # connection.status = "running"

@@ -75,12 +75,12 @@ scratch. This page gets rid of all links and provides the needed markup only.
                     <div class="row">
                         <div class="col-lg">
 
-                            {% for conn in connections %}
+                            {% for connection in connections %}
                             <div class="card">
                                 <div class="card-body">
-                                    <h5 class="card-title">{{conn["id"]}} - {{conn["robot_id"]["type"]}}</h5>
+                                    <h5 class="card-title">{{connection['id']}} - {{connection["robot"]["id"]}}</h5>
                                     <p class="card-text">
-                                        {{conn["description"]}}
+                                        {{connection["description"]}}
                                     </p>
 
                                     <table class="table table-bordered">
@@ -93,15 +93,15 @@ scratch. This page gets rid of all links and provides the needed markup only.
                                         <tbody>
                                             <tr>
                                                 <td>ip</td>
-                                                <td>{{conn["ip"]}}</td>
+                                                <td>{{connection["ip"]}}</td>
                                             </tr>
                                             <tr>
                                                 <td>port</td>
-                                                <td>{{conn["port"]}}</td>
+                                                <td>{{connection["port"]}}</td>
                                             </tr>
                                             <tr>
                                                 <td>topic</td>
-                                                <td>{{conn["topic"]}}</td>
+                                                <td>{{connection["mqttTopic"]}}</td>
                                             </tr>
                                          
                                         </tbody>

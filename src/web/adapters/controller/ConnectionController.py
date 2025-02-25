@@ -11,6 +11,10 @@ from src.web.pkg.interfaces.externalInterfaces import ConnectionExternalInterfac
 from src.web.pkg.interfaces.AdapterInterfaces import ConnectAdapterInterface
 from src.web.adapters.presenter.ConnectionPresenter import DefaultConnectionPresenter
 
+
+
+# from src.web.adapters.controller.RobotController import RobotController
+
 class ConnectionController:
     
     @staticmethod
@@ -27,7 +31,6 @@ class ConnectionController:
             newConnections.append(newConn)
         
         adapter =  connectAdapter()
-        
         return adapter.adaptConnectionsInformation(newConnections)
     
     @staticmethod
