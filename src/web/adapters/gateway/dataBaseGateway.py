@@ -38,7 +38,8 @@ class DataBaseGateway(DataBaseGatewayInterface):
         connections = self._dataBaseExternal.get(id, "connections")
         
         if connections is None:
-            raise Exception("Connection {} not found".format(id))
+            return None
+            # raise Exception("Connection {} not found".format(id))
              
         connectionDto = ConnectionDTO(connections[0], connections[1], connections[2], connections[3], connections[4], connections[5], connections[6])
         
@@ -50,20 +51,29 @@ class DataBaseGateway(DataBaseGatewayInterface):
         connections = self._dataBaseExternal.getAll("connections")
         
         if connections is None:
-            raise Exception("No connections found.")
+            return None
+            # raise Exception("No connections found.")
         
         return [ConnectionDTO(connection[0], connection[1], connection[2], connection[3], connection[4], connection[5], connection[6]) for connection in connections]
      
-    def updateConnection(self, id, connection) -> ConnectionDTO:
+    def updateConnection(self, id, 
+                         ip: str, 
+                            port: int,
+                            description: str, 
+                            token: str, 
+                            mqttTopic: str, 
+                            robotId: int) -> ConnectionDTO:
         conn = {
-            "robot_id" : connection.robot.id,
-            "ip": connection.ip,
-            "port": connection.port,
-            "description": connection.description
+            "robot_id" : robotId,
+            "ip": ip,
+            "port": port,
+            "description": description,
+            "token": token,
+            "topic": mqttTopic
         }
         
         self._dataBaseExternal.update(id, conn, "connections")
-        return ConnectionDTO(id, connection.ip, connection.port, connection.description, connection.token, connection.mqttTopic)
+        return ConnectionDTO(id, robotId, mqttTopic, ip, port, description, token)
     
     def deleteConnection(self, id) -> bool:
         
@@ -102,7 +112,8 @@ class DataBaseGateway(DataBaseGatewayInterface):
         robot = self._dataBaseExternal.get(id, "robots")
         
         if robot is None:
-            raise Exception("Robot {} not found".format(id))
+            return None
+            raise Excep;RobotDTO(robot[0], robot[1], robot[2], robot[3])
         
         RobotDto = RobotDTO(robot[0], robot[1], robot[2], robot[3])
         
@@ -114,7 +125,8 @@ class DataBaseGateway(DataBaseGatewayInterface):
         robots = self._dataBaseExternal.getAll("robots")
         
         if robots is None:
-            raise Exception("No robots found.")
+            return None
+            # raise Exception("No robots found.")
         
         return [RobotDTO(robot[0], robot[1], robot[2], robot[3]) for robot in robots]
     

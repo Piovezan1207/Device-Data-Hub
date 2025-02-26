@@ -1,0 +1,30 @@
+{% with messages = get_flashed_messages(with_categories=true) %}
+{% if messages %}
+{% for category, message in messages %}
+
+{%if category == 'error' %}
+
+<div class="alert alert-danger alert-dismissible fade show" role="alert">
+    {{ message }}
+</div>
+{%else%}
+
+<div class="alert alert-success alert-dismissible fade show" role="alert">
+    {{ message }}
+</div>
+
+{%endif%}
+
+{% endfor %}
+
+<script>
+    setTimeout(function () {
+        let alerts = document.querySelectorAll(".alert");
+        alerts.forEach(alert => {
+            alert.classList.remove("show");  // Oculta o alerta suavemente
+            setTimeout(() => alert.remove(), 500); // Remove o alerta do DOM
+        });
+    }, 5000); // 5000 milissegundos = 5 segundos
+</script>
+{% endif %}
+{% endwith %}

@@ -38,11 +38,17 @@ class ConnectionController:
         
         dataBaseGateway = DataBaseGateway(dataBaseExternal)
         
-        deleted = ConnectionUseCases.deleteConnection(id, dataBaseGateway, connectionExternal)
+        connection = ConnectionUseCases.getConnection(id, dataBaseGateway, None, connectionExternal)
+        
+        # return connection
+        
+        if connection:
+
+            connection = ConnectionUseCases.deleteConnection(connection, dataBaseGateway, connectionExternal)
         
         adapter =  connectAdapter()
         
-        return adapter.adaptConnectionInformation(deleted)
+        return adapter.adaptConnectionInformation(connection)
     
     @staticmethod
     def createConnection(ip: str, 
@@ -54,19 +60,19 @@ class ConnectionController:
                 dataBaseExternal: DataBaseExternalInterface,
                 connectionExternal: ConnectionExternalInterface,
                 senderClient,
-                connectAdapter: ConnectAdapterInterface = DefaultConnectionPresenter):
+                connectAdapter: ConnectAdapterInterface = DefaultConnectionPresenter,
+                runConnection = True):
         
         dataBaseGateway = DataBaseGateway(dataBaseExternal)
         
         connection = ConnectionUseCases.create(ip, port, description, token, mqttTopic, robotId, dataBaseGateway, senderClient)
         
-        newConnection = ConnectionUseCases.runConnection(connection, connectionExternal)
+        if runConnection:
+            connection = ConnectionUseCases.runConnection(connection, connectionExternal)
         
         adapter =  connectAdapter()
         
-        print(newConnection.status, newConnection.status.connected)
-        
-        return adapter.adaptConnectionInformation(newConnection)
+        return adapter.adaptConnectionInformation(connection)
     
     @staticmethod
     def getConnection(id: int, dataBaseExternal: DataBaseExternalInterface, senderClient, connectionExternal: ConnectionExternalInterface, connectAdapter: ConnectAdapterInterface = DefaultConnectionPresenter):
@@ -112,6 +118,24 @@ class ConnectionController:
         connection = ConnectionUseCases.getConnection(id, dataBaseGateway, senderClient, connectionExternal)
         print("ue" , connection, "Ue")
         connection = ConnectionUseCases.closeConnection(connection, connectionExternal)
+        
+        adapter =  connectAdapter()
+        
+        return adapter.adaptConnectionInformation(connection)
+    
+    @staticmethod 
+    def updateConnection(id: int, ip: str, port: int, description: str, token: str, mqttTopic: str, robotId: int, dataBaseExternal: DataBaseExternalInterface, connectionExternal: ConnectionExternalInterface, senderClient, connectAdapter: ConnectAdapterInterface = DefaultConnectionPresenter, runConnection = True):
+        
+        dataBaseGateway = DataBaseGateway(dataBaseExternal)
+        
+        connection = ConnectionUseCases.getConnection(id, dataBaseGateway, senderClient, connectionExternal)
+        
+        if connection:
+
+            connection = ConnectionUseCases.closeConnection(connection, connectionExternal)
+            connection = ConnectionUseCases.updateConnection(id, ip, port, description, token, mqttTopic, robotId, dataBaseGateway, senderClient)
+            if runConnection:
+                connection = ConnectionUseCases.runConnection(connection, connectionExternal)
         
         adapter =  connectAdapter()
         

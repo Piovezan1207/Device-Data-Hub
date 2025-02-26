@@ -5,6 +5,10 @@ class DefaultRobotPresenter(RobotAdapterInterface):
         pass
     
     def adaptRobotInformation(self, robot):
+        
+        if robot is None:
+            return {}
+        
         data = {
             "id": robot.id,
             "type": robot.type,
@@ -15,7 +19,10 @@ class DefaultRobotPresenter(RobotAdapterInterface):
         return data
         
     def adaptRobotsInformation(self, robots):
-        print(robots)
+        
+        if robots is None:
+            return {"robots" : []}
+        
         data = {
                 "robots" : [{
                     "id": robot.id,

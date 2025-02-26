@@ -1,57 +1,8 @@
-<!DOCTYPE html>
-<!--
-This is a starter template page. Use this page to start your new project from
-scratch. This page gets rid of all links and provides the needed markup only.
--->
-<script src="https://cdn.jsdelivr.net/npm/admin-lte@3.1/dist/js/adminlte.min.js"></script>
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/admin-lte@3.1/dist/css/adminlte.min.css">
-<html lang="pt">
+{% extends "defaultPage.html" %}
 
-<head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>AdminLTE 3 | Top Navigation</title>
+{% block title %}Página Inicial{% endblock %}
 
-    <!-- Google Font: Source Sans Pro -->
-    <link rel="stylesheet"
-        href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,400i,700&display=fallback">
-    <!-- Font Awesome Icons -->
-    
-</head>
-
-<body class="hold-transition layout-top-nav">
-    <div class="wrapper">
-
-        <!-- Navbar -->
-        <nav class="main-header navbar navbar-expand-md navbar-light navbar-white">
-            <div class="container">
-                <a href="../../index3.html" class="navbar-brand">
-                    <img src="../../dist/img/AdminLTELogo.png" alt="AdminLTE Logo"
-                        class="brand-image img-circle elevation-3" style="opacity: .8">
-                    <span class="brand-text font-weight-light">AdminLTE 3</span>
-                </a>
-
-                <button class="navbar-toggler order-1" type="button" data-toggle="collapse"
-                    data-target="#navbarCollapse" aria-controls="navbarCollapse" aria-expanded="false"
-                    aria-label="Toggle navigation">
-                    <span class="navbar-toggler-icon"></span>
-                </button>
-
-                <div class="collapse navbar-collapse order-3" id="navbarCollapse">
-                    <!-- Left navbar links -->
-                    <ul class="navbar-nav">
-                        <li class="nav-item">
-                            <a href="/" class="nav-link">Home</a>
-                        </li>
-                        <li class="nav-item">
-                            <a href="/connection" class="nav-link">Contact</a>
-                        </li>
-
-                    </ul>
-                </div>
-        </nav>
-        <!-- /.navbar -->
-
+{% block content %}
         <!-- Content Wrapper. Contains page content -->
         <div class="content-wrapper">
             <!-- Content Header (Page header) -->
@@ -78,10 +29,24 @@ scratch. This page gets rid of all links and provides the needed markup only.
                             {% for connection in connections %}
                             <div class="card">
                                 <div class="card-body">
-                                    <h5 class="card-title">{{connection['id']}} - {{connection["robot"]["id"]}}</h5>
+                                    <h5 class="card-title">{{connection['id']}} - {{connection["robot"]["type"]}}</h5>
                                     <p class="card-text">
                                         {{connection["description"]}}
                                     </p>
+
+                                    <button class="btn btn-danger btn-sm" onclick="deleteConnection({{connection['id']}})" id="delete_conn_btn_{{connection['id']}}" >
+                                        <iconify-icon icon="tabler:trash" width="24" height="24"></iconify-icon>
+                                    </button>
+                                    <button class="btn btn-primary btn-sm" onclick="runConnection({{connection['id']}})" id="run_conn_btn_{{connection['id']}}" >
+                                        <iconify-icon icon="mdi:play" width="24" height="24"></iconify-icon>
+
+                                    <button class="btn btn-primary btn-sm" onclick="pauseConnection({{connection['id']}})" id="pause_conn_btn_{{connection['id']}}" >
+                                        <iconify-icon icon="material-symbols:pause" width="24" height="24"></iconify-icon>
+                                    </button>
+
+                                    <button class="btn btn-primary btn-sm" onclick="updateConnection({{connection['id']}})"  id="update_conn_btn_{{connection['id']}}" >
+                                        <iconify-icon icon="material-symbols:edit" width="24" height="24"></iconify-icon>
+                                    </button>
 
                                     <table class="table table-bordered">
                                         <thead>
@@ -103,6 +68,11 @@ scratch. This page gets rid of all links and provides the needed markup only.
                                                 <td>topic</td>
                                                 <td>{{connection["mqttTopic"]}}</td>
                                             </tr>
+
+                                            <tr>
+                                                <td>status</td>
+                                                <td>{{connection["status"]}}</td>
+                                            </tr>
                                          
                                         </tbody>
                                     </table>
@@ -121,26 +91,47 @@ scratch. This page gets rid of all links and provides the needed markup only.
         </div>
         <!-- /.content-wrapper -->
 
-        <!-- Control Sidebar -->
-        <aside class="control-sidebar control-sidebar-dark">
-            <!-- Control sidebar content goes here -->
-        </aside>
-        <!-- /.control-sidebar -->
 
-        <!-- Main Footer -->
-        <footer class="main-footer">
-            <!-- To the right -->
-            <div class="float-right d-none d-sm-inline">
-                V0.0.1 - Vinicius Piovezan
-            </div>
-            <!-- Default to the left -->
-            <strong>FINEP / SENAI-SP</strong>
-        </footer>
-    </div>
-    <!-- ./wrapper -->
+        <script>
 
+            function deleteConnection(id){
 
+                var confirmacao = confirm("Tem certeza que deseja deletar a conexão" + id + " ?");
 
-</body>
+                if(confirmacao)
+                    {
+                        let formData = new FormData(); //Vai ser um fomulario enviado pelo javascript
+                            formData.append('id', id);
 
-</html>
+                            fetch("{{ url_for('api_delete_connection', id=0) }}".replace("0", id),  {
+                            method: 'DELETE', 
+                            body: formData
+                            }).then(() => { document.location.reload(true);});
+                    }
+            }
+
+            function runConnection(id){
+
+                    fetch("{{ url_for('api_start_connection', id=0) }}".replace("0", id),  {
+                    method: 'GET', 
+                    }).then(() => { document.location.reload(true);});
+
+            }
+            
+            function pauseConnection(id){
+
+                    fetch("{{ url_for('api_stop_connection', id=0) }}".replace("0", id),  {
+                    method: 'GET', 
+                    }).then(() => { document.location.reload(true);});
+        
+            }
+            
+            function updateConnection(id){
+
+                    window.location.href="{{ url_for('connection_update', id=0) }}".replace("0", id)
+        
+            }
+            
+        </script>
+
+{% endblock %}

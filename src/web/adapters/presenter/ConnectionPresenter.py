@@ -7,6 +7,10 @@ class DefaultConnectionPresenter(ConnectAdapterInterface):
         self._robotAdapter = DefaultRobotPresenter()
     
     def adaptConnectionInformation(self, connection):
+        
+        if connection is None:
+            return {}
+        
         data = {
             "id": connection.id,
             "ip": connection.ip,
@@ -27,6 +31,10 @@ class DefaultConnectionPresenter(ConnectAdapterInterface):
         return data
     
     def adaptConnectionsInformation(self, connections):
+        
+        if connections is None:
+            return {"connections": []}
+        
         data = {
 
                 "connections":

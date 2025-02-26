@@ -55,10 +55,12 @@ class ThreadManager:
     
     def stopThread(self, id):
         print(id)
-        self._threadList[id].stop()
-        self._threadList[id].join()
-        self._threadList.pop(id)
-        return True
+        if id in self._threadList:
+            self._threadList[id].stop()
+            self._threadList[id].join()
+            self._threadList.pop(id)
+            return True
+        
     
     def stopAllThreads(self):
         for thread in self._threadList:
@@ -136,9 +138,9 @@ class getDataThread(threading.Thread):
             if not self.client.is_connected():
                 try:
                     self.client.connect(self.BROKER, self.PORT, 60)
-                except:
+                except Exception as e:
                     self._errorStatus = True
-                    self._messageStatus = "Erro ao conectar com o broker."
+                    self._messageStatus = "Problema ao conectar com o broker. - " + e 
                     self._runningStatus = True
                     self._connectedStatus = False
                     continue
@@ -152,9 +154,9 @@ class getDataThread(threading.Thread):
                 self._connectedStatus = True
                 self._messageStatus = "Rodando!"
                 self._errorStatus = False
-            except:
+            except Exception as e:
                 self._errorStatus = True
-                self._messageStatus = "Erro ao publicar no broker.."
+                self._messageStatus = "Problema ao publicar no broker. - " + e 
                 self._runningStatus = True
                 self._connectedStatus = False
                 continue
@@ -176,7 +178,7 @@ class getDataThread(threading.Thread):
         except Exception as e:
             self._connectedStatus = False
             self._errorStatus = True
-            self._messageStatus = "Erro ao se comunicar com o robô."
+            self._messageStatus = "Problema ao se comunicar com o robô. - " + e
 
 
 class connectionExternal(ConnectionExternalInterface):

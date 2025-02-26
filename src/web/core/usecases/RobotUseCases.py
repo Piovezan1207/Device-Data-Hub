@@ -17,9 +17,6 @@ class RobotUseCases:
         
         robotDto = dataBaseGateway.createRobot(typeR, brand, axis)
         
-        if robotDto is None:
-            raise Exception("Robot not found")
-        
         robot = RobotUseCases.DtoToEntitie(robotDto)
         
         return robot
@@ -29,7 +26,8 @@ class RobotUseCases:
         robotDto = dataBaseGateway.getRobot(id)
         
         if robotDto is None:
-            raise Exception("Robot not found")
+            return None
+            # raise Exception("Robot not found")
         
         robot = RobotUseCases.DtoToEntitie(robotDto)
         
@@ -38,6 +36,9 @@ class RobotUseCases:
     @staticmethod
     def getAllRobots(dataBaseGateway: DataBaseGatewayInterface) -> list[Robot]:
         robotDtos = dataBaseGateway.getAllRobots()
+        
+        if robotDtos is None:
+            return None
         
         robots = []
         

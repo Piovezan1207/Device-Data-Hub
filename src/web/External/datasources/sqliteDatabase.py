@@ -39,12 +39,12 @@ class SqliteDatabase(DataBaseExternalInterface):
     
     def update(self, id, data, table) -> str:
         
-        columns = ', '.join(data.keys())  # Pega os nomes das colunas
-        placeholders = ', '.join(['?'] * len(data))  # Cria os placeholders
+        columns = ', '.join([f"{col} = ?" for col in data.keys()])  # Associa cada coluna ao valor
+        placeholders = ', '.join(['?'] * len(data))  # Cria os placeholders para as colunas
         values = tuple(data.values())  # Pega os valores
-        
-        query = f"UPDATE {table} SET {columns} = {placeholders} WHERE id = {id}"
-        
+
+        query = f"UPDATE {table} SET {columns} WHERE id = {id}"
+        print(query, values)
         self._cursor.execute(query, values)
         self._conn.commit()
         return self._cursor.lastrowid

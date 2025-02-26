@@ -1,0 +1,210 @@
+from flask import Flask, jsonify, request, render_template, redirect, flash, url_for
+
+from models import Robot, Connection
+
+import sqlite3
+
+from mqttThread import startMqttThread
+
+mqttThread, mqttClient = None, None
+
+from threadGeneratorTest import createRobotThread
+
+robotThreadList = {}
+
+from sqlalchemy import create_engine
+from sqlalchemy.orm import sessionmaker
+from models import Robot, Connection, Base
+
+######### External 
+#Database
+from src.web.External.datasources.SqliteDatabase import SqliteDatabase
+#Connection with robots
+from src.web.External.integrations.connectionExternal import connectionExternal, ThreadManager
+
+######### Controller arch 
+from src.web.adapters.controller.ConnectionController import ConnectionController
+from src.web.adapters.controller.RobotController import RobotController
+
+
+conn = sqlite3.connect("instance/banco.db", check_same_thread=False)
+database = SqliteDatabase(conn)
+
+manager = ThreadManager()
+externalConnThreads = connectionExternal(manager)
+
+app = Flask(__name__)
+app.secret_key = '123#Senai!!23@@()hd28'  # Required for flash messages
+
+@app.route('/connection/create')
+def connection_create():
+    robots = RobotController.getAllRobots(database)
+    return render_template('/connections/index.html', robots=robots["robots"])
+
+@app.route('/connection/create', methods=['POST'])
+def connection_post():
+    data = request.form.to_dict()    
+    
+    keysList = ['ip', 'port', 'description', 'token', 'topic', 'robot_id']
+    
+    for key in keysList:
+        if key not in data or data[key] == '':
+            flash('O campo {} é obrigatorio.'.format(key), 'error')  # Store error message
+            return redirect(url_for('connection_create'))  # Redirect to the same page
+    
+    
+    connection = ConnectionController.createConnection(ip=data['ip'], 
+                                                            port=int(data['port']),
+                                                            description=data['description'],
+                                                            token=data['token'],
+                                                            mqttTopic=data['topic'],
+                                                            robotId=data['robot_id'],
+                                                            dataBaseExternal=database,
+                                                            connectionExternal=externalConnThreads,
+                                                            senderClient=mqttClient,
+                                                            runConnection=True)
+    
+    flash('{} - Conexão com o robô {} criada com sucesso!'.format(connection["id"], connection["robot"]["type"]), 'succes')  # Store error message
+    return redirect('/')
+
+
+@app.route('/connection/update/<int:id>')
+def connection_update(id):
+    connection = ConnectionController.getConnection(id, database, mqttClient, externalConnThreads)
+    robots = RobotController.getAllRobots(database)
+    return render_template('/connections/update.html', connection=connection, robots=robots["robots"])
+
+@app.route('/connection/update/<int:id>', methods=['POST'])
+def connection_update_post(id):
+    data = request.form.to_dict()
+    print(data)
+    
+    keysList = ['ip', 'port', 'description', 'token', 'topic', 'robot_id']
+    
+    for key in keysList:
+        if key not in data or data[key] == '':
+            flash('O campo {} é obrigatorio.'.format(key), 'error')  # Store error message
+            return redirect(url_for('connection_update', id=id))  # Redirect to the same page
+    
+    
+    connection = ConnectionController.updateConnection(id = id,
+                                                       ip=data['ip'], 
+                                                        port=int(data['port']),
+                                                        description=data['description'],
+                                                        token=data['token'],
+                                                        mqttTopic=data['topic'],
+                                                        robotId=data['robot_id'],
+                                                        dataBaseExternal=database,
+                                                        connectionExternal=externalConnThreads,
+                                                        senderClient=mqttClient,
+                                                        runConnection=True)
+    
+    flash('{} - Conexão atualizada com sucesso.'.format(connection["id"]), 'succes')  # Store error message
+    return redirect('/')
+
+
+
+@app.route('/robots')
+def robots():
+    robots = RobotController.getAllRobots(database)
+    return render_template('/robots/index.html', robots=robots["robots"])
+
+@app.route('/')
+def home():
+    connections = ConnectionController.getAllConnections(database, mqttClient, externalConnThreads)
+    return render_template("/home/index.html",  connections=connections["connections"])
+    # return "Servidor Flask está rodando!"
+
+########################################################################################################################################
+
+@app.route('/api/robots', methods=['GET'])
+def api_get_robots():
+    robots = RobotController.getAllRobots(database)
+    return jsonify(robots)
+
+@app.route('/api/robot/<int:id>', methods=['GET'])
+def api_get_robot(id):
+   
+    robot = RobotController.getRobot(id, database)
+    return jsonify(robot)
+    
+@app.route('/api/connections', methods=['GET'])
+def api_get_connections():
+    connections = ConnectionController.getAllConnections(database, mqttClient, externalConnThreads)
+    return jsonify(connections)
+
+@app.route('/api/connection/<int:id>', methods=['GET'])
+def api_get_connection(id):
+    connections = ConnectionController.getConnection(id, database, mqttClient, externalConnThreads)
+    return jsonify(connections)
+
+@app.route('/api/connection', methods=['POST'])
+def api_create_connection():
+    data = request.json
+    
+    keysList = ['ip', 'port', 'description', 'token', 'topic', 'robot_id']
+    
+    for key in keysList:
+        if key not in data:
+            return jsonify({"error": "Missing key {}".format(key)})
+    
+    connection = ConnectionController.createConnection(ip=data['ip'], 
+                                                            port=data['port'],
+                                                            description=data['description'],
+                                                            token=data['token'],
+                                                            mqttTopic=data['topic'],
+                                                            robotId=data['robot_id'],
+                                                            dataBaseExternal=database,
+                                                            connectionExternal=externalConnThreads,
+                                                            senderClient=mqttClient,
+                                                            runConnection=False)
+   
+    return jsonify(connection)
+
+@app.route('/api/connection/<int:id>', methods=["PUT"])
+def api_update_connection(id):
+    data = request.json
+
+    keysList = ['ip', 'port', 'description', 'token', 'topic', 'robot_id']
+
+    for key in keysList:
+        if key not in data:
+            return jsonify({"error": "Missing key {}".format(key)})
+
+    connection = ConnectionController.updateConnection( id = id,
+                                                        ip=data['ip'], 
+                                                        port=data['port'],
+                                                        description=data['description'],
+                                                        token=data['token'],
+                                                        mqttTopic=data['topic'],
+                                                        robotId=data['robot_id'],
+                                                        dataBaseExternal=database,
+                                                        connectionExternal=externalConnThreads,
+                                                        senderClient=mqttClient,
+                                                        runConnection=False)
+    
+    return jsonify(connection) 
+
+@app.route('/api/connection/<int:id>', methods=["DELETE"])
+def api_delete_connection(id):
+   connection = ConnectionController.deleteConnection(id, database, externalConnThreads)
+   return jsonify(connection) 
+
+@app.route('/api/connection/start/<int:id>', methods=["GET"])
+def api_start_connection(id):
+   connection = ConnectionController.runConnection(id, database, None, externalConnThreads)
+   return jsonify(connection) 
+
+@app.route('/api/connection/stop/<int:id>', methods=["GET"])
+def api_stop_connection(id):
+   connection = ConnectionController.stopConnection(id, database, None, externalConnThreads)
+   return jsonify(connection) 
+
+
+   
+
+if __name__ == '__main__':
+    # thread = threading.Thread(target=startAllThreads, daemon=True)
+    # thread.start()  # Inicia o script antes do Flask rodar
+    # startAllThreads()
+    app.run(debug=True)

@@ -15,7 +15,7 @@ class DataBaseGatewayInterface():
                         description: str, 
                         token: str, 
                         mqttTopic: str, 
-                        robotId: int) -> Connection:
+                        robotId: int) -> ConnectionDTO:
         pass
     
     @abstractmethod
@@ -27,7 +27,14 @@ class DataBaseGatewayInterface():
         pass
 
     @abstractmethod 
-    def updateConnection(self, id, connection) -> ConnectionDTO:
+    def updateConnection(self, 
+                         id:int, 
+                        ip: str, 
+                        port: int,
+                        description: str, 
+                        token: str, 
+                        mqttTopic: str, 
+                        robotId: int) -> ConnectionDTO:
         pass
     
     @abstractmethod
