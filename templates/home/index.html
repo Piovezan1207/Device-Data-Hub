@@ -33,21 +33,27 @@
                                     <p class="card-text">
                                         {{connection["description"]}}
                                     </p>
+                                    <div class="d-flex gap-2 mb-2">
+                                        <button class="btn btn-danger btn-sm me-2" onclick="deleteConnection({{connection['id']}})" id="delete_conn_btn_{{connection['id']}}" >
+                                            <iconify-icon icon="tabler:trash" width="24" height="24"></iconify-icon>
+                                        </button>
 
-                                    <button class="btn btn-danger btn-sm" onclick="deleteConnection({{connection['id']}})" id="delete_conn_btn_{{connection['id']}}" >
-                                        <iconify-icon icon="tabler:trash" width="24" height="24"></iconify-icon>
-                                    </button>
-                                    <button class="btn btn-primary btn-sm" onclick="runConnection({{connection['id']}})" id="run_conn_btn_{{connection['id']}}" >
-                                        <iconify-icon icon="mdi:play" width="24" height="24"></iconify-icon>
+                                        {%if not connection["status"]["running"]  %}
+                                        <button class="btn btn-primary btn-sm me-2" onclick="runConnection({{connection['id']}})" id="run_conn_btn_{{connection['id']}}" >
+                                            <iconify-icon icon="mdi:play" width="24" height="24"></iconify-icon>
 
-                                    <button class="btn btn-primary btn-sm" onclick="pauseConnection({{connection['id']}})" id="pause_conn_btn_{{connection['id']}}" >
-                                        <iconify-icon icon="material-symbols:pause" width="24" height="24"></iconify-icon>
-                                    </button>
+                                        {% else %}
 
-                                    <button class="btn btn-primary btn-sm" onclick="updateConnection({{connection['id']}})"  id="update_conn_btn_{{connection['id']}}" >
-                                        <iconify-icon icon="material-symbols:edit" width="24" height="24"></iconify-icon>
-                                    </button>
+                                        <button class="btn btn-primary btn-sm me-2" onclick="pauseConnection({{connection['id']}})" id="pause_conn_btn_{{connection['id']}}" >
+                                            <iconify-icon icon="material-symbols:pause" width="24" height="24"></iconify-icon>
+                                        </button>
 
+                                        {% endif %}
+
+                                        <button class="btn btn-primary btn-sm me-2" onclick="updateConnection({{connection['id']}})"  id="update_conn_btn_{{connection['id']}}" >
+                                            <iconify-icon icon="material-symbols:edit" width="24" height="24"></iconify-icon>
+                                        </button>
+                                    </div>
                                     <table class="table table-bordered">
                                         <thead>
                                             <tr>

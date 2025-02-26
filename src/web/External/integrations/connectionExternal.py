@@ -140,7 +140,7 @@ class getDataThread(threading.Thread):
                     self.client.connect(self.BROKER, self.PORT, 60)
                 except Exception as e:
                     self._errorStatus = True
-                    self._messageStatus = "Problema ao conectar com o broker. - " + e 
+                    self._messageStatus = "Problema ao conectar com o broker. - "# + str(e) 
                     self._runningStatus = True
                     self._connectedStatus = False
                     continue
@@ -155,8 +155,8 @@ class getDataThread(threading.Thread):
                 self._messageStatus = "Rodando!"
                 self._errorStatus = False
             except Exception as e:
+                self._messageStatus = "Problema ao publicar no broker. - "# + str(e) 
                 self._errorStatus = True
-                self._messageStatus = "Problema ao publicar no broker. - " + e 
                 self._runningStatus = True
                 self._connectedStatus = False
                 continue
@@ -178,7 +178,7 @@ class getDataThread(threading.Thread):
         except Exception as e:
             self._connectedStatus = False
             self._errorStatus = True
-            self._messageStatus = "Problema ao se comunicar com o robô. - " + e
+            self._messageStatus = "Problema ao se comunicar com o robô. - " #+ str(e)
 
 
 class connectionExternal(ConnectionExternalInterface):
@@ -195,7 +195,7 @@ class connectionExternal(ConnectionExternalInterface):
         robot = connection.robot
         port = connection.port
         description = connection.description
-        mqttSender = connection.sender
+        # mqttSender = connection.sender
         
         password = connection.token
         if robot.type == "HC10":

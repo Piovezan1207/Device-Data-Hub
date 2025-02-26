@@ -19,7 +19,7 @@ class DefaultConnectionPresenter(ConnectAdapterInterface):
             "token": connection.token,
             "mqttTopic": connection.mqttTopic,
             "robot": self._robotAdapter.adaptRobotInformation(connection.robot),
-            "sender": connection.sender,
+            # "sender": connection.sender,
             "status": {
                 "running" : connection.status.running,
                 "connected" : connection.status.connected,
@@ -46,7 +46,7 @@ class DefaultConnectionPresenter(ConnectAdapterInterface):
                     "token": connection.token,
                     "mqttTopic": connection.mqttTopic,
                     "robot": self._robotAdapter.adaptRobotInformation(connection.robot),
-                    "sender": connection.sender,
+                    # "sender": connection.sender,
                     "status": {
                                 "running" : connection.status.running,
                                 "connected" : connection.status.connected,

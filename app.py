@@ -1,20 +1,11 @@
 from flask import Flask, jsonify, request, render_template, redirect, flash, url_for
 
-from models import Robot, Connection
-
 import sqlite3
 
-from mqttThread import startMqttThread
-
-mqttThread, mqttClient = None, None
-
-from threadGeneratorTest import createRobotThread
 
 robotThreadList = {}
 
-from sqlalchemy import create_engine
-from sqlalchemy.orm import sessionmaker
-from models import Robot, Connection, Base
+
 
 ######### External 
 #Database
@@ -61,7 +52,6 @@ def connection_post():
                                                             robotId=data['robot_id'],
                                                             dataBaseExternal=database,
                                                             connectionExternal=externalConnThreads,
-                                                            senderClient=mqttClient,
                                                             runConnection=True)
     
     flash('{} - Conexão com o robô {} criada com sucesso!'.format(connection["id"], connection["robot"]["type"]), 'succes')  # Store error message
@@ -70,7 +60,7 @@ def connection_post():
 
 @app.route('/connection/update/<int:id>')
 def connection_update(id):
-    connection = ConnectionController.getConnection(id, database, mqttClient, externalConnThreads)
+    connection = ConnectionController.getConnection(id, database, externalConnThreads)
     robots = RobotController.getAllRobots(database)
     return render_template('/connections/update.html', connection=connection, robots=robots["robots"])
 
@@ -96,7 +86,6 @@ def connection_update_post(id):
                                                         robotId=data['robot_id'],
                                                         dataBaseExternal=database,
                                                         connectionExternal=externalConnThreads,
-                                                        senderClient=mqttClient,
                                                         runConnection=True)
     
     flash('{} - Conexão atualizada com sucesso.'.format(connection["id"]), 'succes')  # Store error message
@@ -111,7 +100,7 @@ def robots():
 
 @app.route('/')
 def home():
-    connections = ConnectionController.getAllConnections(database, mqttClient, externalConnThreads)
+    connections = ConnectionController.getAllConnections(database, externalConnThreads)
     return render_template("/home/index.html",  connections=connections["connections"])
     # return "Servidor Flask está rodando!"
 
@@ -130,12 +119,12 @@ def api_get_robot(id):
     
 @app.route('/api/connections', methods=['GET'])
 def api_get_connections():
-    connections = ConnectionController.getAllConnections(database, mqttClient, externalConnThreads)
+    connections = ConnectionController.getAllConnections(database, externalConnThreads)
     return jsonify(connections)
 
 @app.route('/api/connection/<int:id>', methods=['GET'])
 def api_get_connection(id):
-    connections = ConnectionController.getConnection(id, database, mqttClient, externalConnThreads)
+    connections = ConnectionController.getConnection(id, database, externalConnThreads)
     return jsonify(connections)
 
 @app.route('/api/connection', methods=['POST'])
@@ -156,7 +145,6 @@ def api_create_connection():
                                                             robotId=data['robot_id'],
                                                             dataBaseExternal=database,
                                                             connectionExternal=externalConnThreads,
-                                                            senderClient=mqttClient,
                                                             runConnection=False)
    
     return jsonify(connection)
@@ -180,7 +168,6 @@ def api_update_connection(id):
                                                         robotId=data['robot_id'],
                                                         dataBaseExternal=database,
                                                         connectionExternal=externalConnThreads,
-                                                        senderClient=mqttClient,
                                                         runConnection=False)
     
     return jsonify(connection) 
@@ -192,19 +179,17 @@ def api_delete_connection(id):
 
 @app.route('/api/connection/start/<int:id>', methods=["GET"])
 def api_start_connection(id):
-   connection = ConnectionController.runConnection(id, database, None, externalConnThreads)
+   connection = ConnectionController.runConnection(id, database, externalConnThreads)
    return jsonify(connection) 
 
 @app.route('/api/connection/stop/<int:id>', methods=["GET"])
 def api_stop_connection(id):
-   connection = ConnectionController.stopConnection(id, database, None, externalConnThreads)
+   connection = ConnectionController.stopConnection(id, database, externalConnThreads)
    return jsonify(connection) 
 
 
    
 
 if __name__ == '__main__':
-    # thread = threading.Thread(target=startAllThreads, daemon=True)
-    # thread.start()  # Inicia o script antes do Flask rodar
-    # startAllThreads()
-    app.run(debug=True)
+    ConnectionController.runAllConnections(database, externalConnThreads)
+    app.run(debug=False)
