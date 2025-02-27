@@ -8,16 +8,24 @@ class SqliteDatabase(DataBaseExternalInterface):
         self._conn = conn
         self._cursor = conn.cursor()
         
-    def get(self, id, table) -> str:
-        query = f"SELECT * FROM {table} WHERE id = {id}"
+    def get(self, id, table,  withDeleted=True) -> str:
+        if withDeleted:
+            query = f"SELECT * FROM {table} WHERE id = {id}"
+        else:
+            query = f"SELECT * FROM {table} WHERE id = {id} AND deleted_at IS NULL"
+            
         self._cursor.execute(query)
         data = self._cursor.fetchall()
         if len(data) == 0:
             return None
         return data[0]
     
-    def getAll(self, table) -> str:
-        query = f"SELECT * FROM {table}"
+    def getAll(self, table, withDeleted=True) -> str:
+        if withDeleted:
+            query = f"SELECT * FROM {table}"
+        else:
+            query = f"SELECT * FROM {table} WHERE deleted_at IS NULL"
+            
         self._cursor.execute(query)
         data = self._cursor.fetchall()
         if len(data) == 0:
@@ -52,6 +60,14 @@ class SqliteDatabase(DataBaseExternalInterface):
     def delete(self, id, table) -> str:
         
         query = f"DELETE FROM {table} WHERE id = {id}"
+        
+        self._cursor.execute(query)
+        self._conn.commit()
+        return self._cursor.lastrowid
+    
+    def softDelete(self, id, table) -> str:
+        
+        query = f"UPDATE {table} SET deleted_at = CURRENT_TIMESTAMP WHERE id = {id}"
         
         self._cursor.execute(query)
         self._conn.commit()

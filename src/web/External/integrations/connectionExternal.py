@@ -195,7 +195,11 @@ class connectionExternal(ConnectionExternalInterface):
         robot = connection.robot
         port = connection.port
         description = connection.description
-        # mqttSender = connection.sender
+        
+        brokerIp = connection.broker.ip
+        brokerPort = connection.broker.port
+        brokerUser = connection.broker.user
+        brokerPassword = connection.broker.password
         
         password = connection.token
         if robot.type == "HC10":
@@ -210,7 +214,8 @@ class connectionExternal(ConnectionExternalInterface):
         else:
             raise Exception("Robot not found")
         
-        BROKER_INFO = [BROKER_IP, BROKER_PORT, BROKER_USER, BROKER_PASSWORD]
+        # BROKER_INFO = [BROKER_IP, BROKER_PORT, BROKER_USER, BROKER_PASSWORD]
+        BROKER_INFO = [brokerIp, brokerPort, brokerUser, brokerPassword]
         
         # robotThread = getDataThread(mqttSender, robot.brand, description, robot.axis, topic, password, robotConnector, robotAdapter)
         robotThread = getDataThread(BROKER_INFO, robot.brand, description, robot.axis, topic, password, robotConnector, robotAdapter)

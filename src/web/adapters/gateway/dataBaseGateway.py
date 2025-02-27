@@ -2,7 +2,21 @@ from src.web.pkg.interfaces.gatewayInterfaces import DataBaseGatewayInterface
 from src.web.pkg.interfaces.externalInterfaces import DataBaseExternalInterface
 
 from src.web.pkg.DTO.RobotDTO import RobotDTO
-from src.web.pkg.DTO.connectionDTO import ConnectionDTO
+from src.web.pkg.DTO.ConnectionDTO import ConnectionDTO
+from src.web.pkg.DTO.BrokerDTO import BrokerDTO
+
+
+from dotenv import load_dotenv
+import os
+
+load_dotenv()
+
+from cryptography.fernet import Fernet
+
+
+f = Fernet(os.getenv("APP_KEY").encode())
+
+
 
 class DataBaseGateway(DataBaseGatewayInterface):
     def __init__(self,
@@ -15,7 +29,8 @@ class DataBaseGateway(DataBaseGatewayInterface):
                         description: str, 
                         token: str, 
                         mqttTopic: str, 
-                        robotId: int) -> ConnectionDTO:
+                        robotId: int,
+                        brokerId: int) -> ConnectionDTO:
         
         conn = {
             "robot_id" : robotId,
@@ -23,16 +38,15 @@ class DataBaseGateway(DataBaseGatewayInterface):
             "port": port,
             "description": description,
             "token": token,
-            "topic": mqttTopic
+            "topic": mqttTopic,
+            "broker_id": brokerId
         }
         
         id = self._dataBaseExternal.create(conn, "connections")
         
-        connectionDto = ConnectionDTO(id=id, robotId=robotId, ip=ip, port=port, description=description, token=token, mqttTopic=mqttTopic)
+        connectionDto = ConnectionDTO(id=id, robotId=robotId, ip=ip, port=port, description=description, token=token, mqttTopic=mqttTopic, brokerId=brokerId)
         
-        return connectionDto
-        
-        
+        return connectionDto    
         
     def getConnection(self, id) -> ConnectionDTO:
         connections = self._dataBaseExternal.get(id, "connections")
@@ -41,20 +55,18 @@ class DataBaseGateway(DataBaseGatewayInterface):
             return None
             # raise Exception("Connection {} not found".format(id))
              
-        connectionDto = ConnectionDTO(connections[0], connections[1], connections[2], connections[3], connections[4], connections[5], connections[6])
+        connectionDto = ConnectionDTO(connections[0], connections[1], connections[2], connections[3], connections[4], connections[5], connections[6], connections[7])
         
         return connectionDto
     
-    
-    
     def getAllConnections(self) -> list[ConnectionDTO]:
         connections = self._dataBaseExternal.getAll("connections")
-        
+        print(connections)
         if connections is None:
             return None
             # raise Exception("No connections found.")
         
-        return [ConnectionDTO(connection[0], connection[1], connection[2], connection[3], connection[4], connection[5], connection[6]) for connection in connections]
+        return [ConnectionDTO(connection[0], connection[1], connection[2], connection[3], connection[4], connection[5], connection[6], connection[7]) for connection in connections]
      
     def updateConnection(self, id, 
                          ip: str, 
@@ -62,18 +74,20 @@ class DataBaseGateway(DataBaseGatewayInterface):
                             description: str, 
                             token: str, 
                             mqttTopic: str, 
-                            robotId: int) -> ConnectionDTO:
+                            robotId: int,
+                            brokerId: int) -> ConnectionDTO:
         conn = {
             "robot_id" : robotId,
             "ip": ip,
             "port": port,
             "description": description,
             "token": token,
-            "topic": mqttTopic
+            "topic": mqttTopic,
+            "broker_id": brokerId
         }
         
         self._dataBaseExternal.update(id, conn, "connections")
-        return ConnectionDTO(id, robotId, mqttTopic, ip, port, description, token)
+        return ConnectionDTO(id=id, robotId=robotId, brokerId=brokerId, mqttTopic=mqttTopic, ip=ip, port=port, description=description, token=token)
     
     def deleteConnection(self, id) -> bool:
         
@@ -100,26 +114,19 @@ class DataBaseGateway(DataBaseGatewayInterface):
         
         id = self._dataBaseExternal.create(robot, "robots")
         
-        print(id)
-        
         robotDTO = RobotDTO(id, type, axis, brand)
         
         return robotDTO
-    
-    
     
     def getRobot(self, id) -> RobotDTO:
         robot = self._dataBaseExternal.get(id, "robots")
         
         if robot is None:
             return None
-            raise Excep;RobotDTO(robot[0], robot[1], robot[2], robot[3])
         
         RobotDto = RobotDTO(robot[0], robot[1], robot[2], robot[3])
         
         return RobotDto
-    
-    
     
     def getAllRobots(self) -> list[RobotDTO]:
         robots = self._dataBaseExternal.getAll("robots")
@@ -130,7 +137,6 @@ class DataBaseGateway(DataBaseGatewayInterface):
         
         return [RobotDTO(robot[0], robot[1], robot[2], robot[3]) for robot in robots]
     
- 
     def updateRobot(self, id, robot) -> RobotDTO:
         robot = {
             "type": robot.type,
@@ -153,3 +159,71 @@ class DataBaseGateway(DataBaseGatewayInterface):
             return robot
         except:
             raise Exception("Error deleting robot {}".format(id))
+    
+    #################################################################################################################
+    
+    def createBroker(self,
+                    ip: str,
+                    port: int,
+                    user: str, 
+                    password: str,
+                    nickname: str) -> BrokerDTO:
+        
+        broker = {
+            "ip": ip,
+            "port": port,
+            "user": user,
+            "password": f.encrypt(password.encode()),
+            "nickname" : nickname
+        }
+        
+        id = self._dataBaseExternal.create(broker, "brokers")
+        
+        brokerDTO = BrokerDTO(id, ip, port, user, password, nickname)
+        
+        return brokerDTO
+    
+    def getBroker(self, id) -> BrokerDTO:
+        broker = self._dataBaseExternal.get(id, "brokers")
+        
+        if broker is None:
+            return None
+        
+        
+        brokerDTO = BrokerDTO(broker[0], broker[1], broker[2], broker[3], f.decrypt(broker[4]).decode(), broker[5])
+        
+        return brokerDTO
+    
+    def getAllBrokers(self) -> list[BrokerDTO]:
+        brokers = self._dataBaseExternal.getAll("brokers", withDeleted=False)
+        
+        if brokers is None:
+            return None
+
+        return [BrokerDTO(broker[0], broker[1], broker[2], broker[3], f.decrypt(broker[4]).decode(), broker[5]) for broker in brokers]
+    
+    def updateBroker(self, id, broker) -> BrokerDTO:
+        broker = {
+            "ip": broker.ip,
+            "port": broker.port,
+            "user": broker.user,
+            "password": f.encrypt(broker.password.encode()),
+            "nickname": broker.nickname
+        }
+        
+        self._dataBaseExternal.update(id, broker, "brokers")
+        
+        brokerDTO = BrokerDTO(id, broker.ip, broker.port, broker.user, broker.password, broker.nickname)
+        
+        return brokerDTO
+
+    def deleteBroker(self, id) -> bool:
+        
+        broker = self.getBroker(id)
+        
+        # try:
+        self._dataBaseExternal.softDelete(id, "brokers")
+        return broker
+        # except:
+        #     raise Exception("Error deleting robot {}".format(id))
+    

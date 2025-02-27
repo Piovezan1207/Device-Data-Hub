@@ -1,5 +1,5 @@
 from src.robot.core.entities.Robot import Robot
-# from src.web.core.entities.Sender import Sender
+from src.web.core.entities.Broker import Broker
 from src.web.core.entities.Status import Status
 
 class Connection:
@@ -10,7 +10,7 @@ class Connection:
                     token: str,
                     mqttTopic: str,
                     robot: Robot,
-                    # sender: Sender,
+                    broker: Broker,
                     status: Status = None
                     ):
 
@@ -21,7 +21,7 @@ class Connection:
         self._token = token
         self._mqttTopic = mqttTopic
         self._robot = robot
-        # self._sender = sender
+        self._broker = broker
         if status is None:
             self._status = Status(False, False, False, "")
         else:
@@ -56,9 +56,9 @@ class Connection:
     def robot(self) -> Robot:
         return self._robot
     
-    # @property
-    # def sender(self) -> Sender:
-    #     return self._sender
+    @property
+    def broker(self) -> Broker:
+        return self._broker
     
     @property
     def status(self) -> str:

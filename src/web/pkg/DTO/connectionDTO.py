@@ -4,6 +4,7 @@ from dataclasses import dataclass
 class ConnectionDTO:
     id: int
     robotId: int
+    brokerId: int
     mqttTopic: str 
     ip: str 
     port: int

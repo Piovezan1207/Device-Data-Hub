@@ -42,6 +42,18 @@
                                       </select>
                                   </div>
                                   <div class="form-group">
+                                    <label for="">Broker connection</label>
+                                    <select class="form-control" name="broker_id">
+                                        {% for broker in brokers %}
+                                        <option  value="{{broker['id']}}" 
+                                        {% if broker['id'] == connection['broker']['id'] %}
+                                            selected
+                                        {% endif %}
+                                        >{{broker["nickname"]}}</option>
+                                        {% endfor %}
+                                      </select>
+                                  </div>
+                                  <div class="form-group">
                                     <label for="robotIp">Robot ip</label>
                                     <input type="text" class="form-control" id="robotIp" name="ip" placeholder="Enter robot ip" value="{{connection['ip']}}">
                                   </div>

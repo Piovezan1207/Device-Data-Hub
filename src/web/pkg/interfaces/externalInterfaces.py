@@ -23,11 +23,11 @@ class ConnectionExternalInterface():
 class DataBaseExternalInterface():
     
     @abstractmethod
-    def get(self, id, table) -> str:
+    def get(self, id, table, withDeleted=True) -> str:
         pass
     
     @abstractmethod
-    def getAll(self, table) -> str:
+    def getAll(self, table, withDeleted=True) -> str:
         pass
     
     @abstractmethod
@@ -40,6 +40,10 @@ class DataBaseExternalInterface():
     
     @abstractmethod
     def delete(self, id, table) -> str:
+        pass
+    
+    @abstractmethod
+    def softDelete(self, id, table) -> str:
         pass
     
     

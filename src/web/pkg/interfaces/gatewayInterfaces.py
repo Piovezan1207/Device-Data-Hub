@@ -1,9 +1,11 @@
 from abc import ABC, abstractmethod
 
-from src.web.core.entities.Connection import Connection
-from src.web.pkg.DTO.connectionDTO import ConnectionDTO
+
+from src.web.pkg.DTO.ConnectionDTO import ConnectionDTO
 
 from src.web.pkg.DTO.RobotDTO import RobotDTO
+
+from src.web.pkg.DTO.BrokerDTO import BrokerDTO
 
 
 class DataBaseGatewayInterface():
@@ -14,7 +16,8 @@ class DataBaseGatewayInterface():
                         port: int,
                         description: str, 
                         token: str, 
-                        mqttTopic: str, 
+                        mqttTopic: str,
+                        brokerId: int, 
                         robotId: int) -> ConnectionDTO:
         pass
     
@@ -34,6 +37,7 @@ class DataBaseGatewayInterface():
                         description: str, 
                         token: str, 
                         mqttTopic: str, 
+                        brokerId: int,
                         robotId: int) -> ConnectionDTO:
         pass
     
@@ -64,6 +68,33 @@ class DataBaseGatewayInterface():
 
     @abstractmethod
     def deleteRobot(self, id) -> bool:
+        pass
+   
+   ################################################################
+   
+    @abstractmethod
+    def createBroker(self, 
+                    ip: str,
+                    port: int,
+                    user: str, 
+                    password: str,
+                    nickname: str) -> BrokerDTO:
+        pass
+    
+    @abstractmethod
+    def getBroker(self, id) -> BrokerDTO:
+        pass
+    
+    @abstractmethod
+    def getAllBrokers(self) -> list[BrokerDTO]:
+        pass
+    
+    @abstractmethod 
+    def updateBroker(self, id, Broker) -> BrokerDTO:
+        pass
+
+    @abstractmethod
+    def deleteBroker(self, id) -> bool:
         pass
     
     

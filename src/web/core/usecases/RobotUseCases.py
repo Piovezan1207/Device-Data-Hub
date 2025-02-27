@@ -1,4 +1,4 @@
-from src.web.core.entities.Sender import Sender
+from src.web.core.entities.Broker import Broker
 from src.web.core.entities.Connection import Connection
 from src.web.core.entities.Robot import Robot
 

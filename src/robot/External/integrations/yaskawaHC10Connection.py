@@ -56,6 +56,7 @@ class yaskawaHC10Connection(RobotExternalInterface):
                 position = self.sendPackage(sock)
                 return position
             except socket.timeout:
-                print("Robot socket timeout: Nenhuma resposta recebida do robô em 1 segundo.")
+                pass
+                # print("Robot socket timeout: Nenhuma resposta recebida do robô em 1 segundo.")
 
 

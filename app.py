@@ -16,6 +16,7 @@ from src.web.External.integrations.connectionExternal import connectionExternal,
 ######### Controller arch 
 from src.web.adapters.controller.ConnectionController import ConnectionController
 from src.web.adapters.controller.RobotController import RobotController
+from src.web.adapters.controller.BrokerController import BrokerController
 
 
 conn = sqlite3.connect("instance/banco.db", check_same_thread=False)
@@ -27,16 +28,61 @@ externalConnThreads = connectionExternal(manager)
 app = Flask(__name__)
 app.secret_key = '123#Senai!!23@@()hd28'  # Required for flash messages
 
+@app.route('/broker/create')
+def broker_create():
+    return render_template('/brokers/create.html')
+
+@app.route('/broker/create', methods=['POST'])
+def broker_post():
+    data = request.form.to_dict()    
+    
+    keysList = ['ip', 'port']
+    
+    for key in keysList:
+        if key not in data or data[key] == '':
+            flash('O campo {} é obrigatorio.'.format(key), 'error')  # Store error message
+            return redirect(url_for('connection_create'))  # Redirect to the same page
+    
+    if 'user' not in data or data['user'] == '':
+        data['user'] = ""
+        
+        
+    if 'password' not in data or data['password'] == '':
+        data['password'] = ""
+        
+    if 'nickname' not in data or data['nickname'] == '':
+        data['nickname'] = ""
+    
+    # print(data)
+    
+    broker = BrokerController.createBroker(ip=data['ip'],
+                                           port=int(data['port']),
+                                           user=data['user'],
+                                           password=data['password'],
+                                            nickname=data['nickname'],  
+                                           dataBaseExternal=database)
+    
+    flash('{} - Broker criado com sucesso!'.format(broker["id"]), 'succes')  # Store error message
+    return redirect(url_for('brokers'))
+
+@app.route('/broker')
+def brokers():
+    broker = BrokerController.getAllBrokers(database)
+    return render_template('/brokers/index.html', brokers=broker["brokers"])
+
+        
+
 @app.route('/connection/create')
 def connection_create():
     robots = RobotController.getAllRobots(database)
-    return render_template('/connections/index.html', robots=robots["robots"])
+    brokers = BrokerController.getAllBrokers(database)
+    return render_template('/connections/index.html', robots=robots["robots"], brokers=brokers["brokers"])
 
 @app.route('/connection/create', methods=['POST'])
 def connection_post():
     data = request.form.to_dict()    
     
-    keysList = ['ip', 'port', 'description', 'token', 'topic', 'robot_id']
+    keysList = ['ip', 'port', 'description', 'token', 'topic', 'robot_id', 'broker_id']
     
     for key in keysList:
         if key not in data or data[key] == '':
@@ -50,6 +96,7 @@ def connection_post():
                                                             token=data['token'],
                                                             mqttTopic=data['topic'],
                                                             robotId=data['robot_id'],
+                                                            brokerId=data['broker_id'],
                                                             dataBaseExternal=database,
                                                             connectionExternal=externalConnThreads,
                                                             runConnection=True)
@@ -62,14 +109,15 @@ def connection_post():
 def connection_update(id):
     connection = ConnectionController.getConnection(id, database, externalConnThreads)
     robots = RobotController.getAllRobots(database)
-    return render_template('/connections/update.html', connection=connection, robots=robots["robots"])
+    brokers = BrokerController.getAllBrokers(database)
+    return render_template('/connections/update.html', connection=connection, robots=robots["robots"], brokers=brokers["brokers"])
 
 @app.route('/connection/update/<int:id>', methods=['POST'])
 def connection_update_post(id):
     data = request.form.to_dict()
     print(data)
     
-    keysList = ['ip', 'port', 'description', 'token', 'topic', 'robot_id']
+    keysList = ['ip', 'port', 'description', 'token', 'topic', 'robot_id', 'broker_id']
     
     for key in keysList:
         if key not in data or data[key] == '':
@@ -84,6 +132,7 @@ def connection_update_post(id):
                                                         token=data['token'],
                                                         mqttTopic=data['topic'],
                                                         robotId=data['robot_id'],
+                                                        brokerId=data['broker_id'],
                                                         dataBaseExternal=database,
                                                         connectionExternal=externalConnThreads,
                                                         runConnection=True)
@@ -101,6 +150,7 @@ def robots():
 @app.route('/')
 def home():
     connections = ConnectionController.getAllConnections(database, externalConnThreads)
+    # print(connections)
     return render_template("/home/index.html",  connections=connections["connections"])
     # return "Servidor Flask está rodando!"
 
@@ -116,7 +166,12 @@ def api_get_robot(id):
    
     robot = RobotController.getRobot(id, database)
     return jsonify(robot)
-    
+
+@app.route('/api/broker/<int:id>', methods=["DELETE"])
+def api_delete_broker(id):
+   broker = BrokerController.deleteBroker(id, database)
+   return jsonify(broker) 
+
 @app.route('/api/connections', methods=['GET'])
 def api_get_connections():
     connections = ConnectionController.getAllConnections(database, externalConnThreads)
@@ -131,7 +186,7 @@ def api_get_connection(id):
 def api_create_connection():
     data = request.json
     
-    keysList = ['ip', 'port', 'description', 'token', 'topic', 'robot_id']
+    keysList = ['ip', 'port', 'description', 'token', 'topic', 'robot_id', 'broker_id']
     
     for key in keysList:
         if key not in data:
@@ -143,6 +198,7 @@ def api_create_connection():
                                                             token=data['token'],
                                                             mqttTopic=data['topic'],
                                                             robotId=data['robot_id'],
+                                                            brokerId=data['broker_id'],
                                                             dataBaseExternal=database,
                                                             connectionExternal=externalConnThreads,
                                                             runConnection=False)
@@ -153,7 +209,7 @@ def api_create_connection():
 def api_update_connection(id):
     data = request.json
 
-    keysList = ['ip', 'port', 'description', 'token', 'topic', 'robot_id']
+    keysList = ['ip', 'port', 'description', 'token', 'topic', 'robot_id', 'broker_id']
 
     for key in keysList:
         if key not in data:
@@ -166,6 +222,7 @@ def api_update_connection(id):
                                                         token=data['token'],
                                                         mqttTopic=data['topic'],
                                                         robotId=data['robot_id'],
+                                                        brokerId=data['broker_id'],
                                                         dataBaseExternal=database,
                                                         connectionExternal=externalConnThreads,
                                                         runConnection=False)
@@ -191,5 +248,5 @@ def api_stop_connection(id):
    
 
 if __name__ == '__main__':
-    ConnectionController.runAllConnections(database, externalConnThreads)
+    # ConnectionController.runAllConnections(database, externalConnThreads)
     app.run(debug=False)

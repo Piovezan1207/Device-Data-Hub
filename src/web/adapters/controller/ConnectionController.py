@@ -23,15 +23,18 @@ class ConnectionController:
         dataBaseGateway = DataBaseGateway(dataBaseExternal)
         
         connections  = ConnectionUseCases.getAllConnections(dataBaseGateway, connectionExternal)
-
-        newConnections = []
-        
-        for conn in connections:
-            newConn = ConnectionUseCases.runConnection(conn, connectionExternal)
-            newConnections.append(newConn)
+        print(connections)
+        if connections:
+            connectionsList = []
+            
+            for conn in connections:
+                newConn = ConnectionUseCases.runConnection(conn, connectionExternal)
+                connectionsList.append(newConn)
+                
+            connections = connectionsList
         
         adapter =  connectAdapter()
-        return adapter.adaptConnectionsInformation(newConnections)
+        return adapter.adaptConnectionsInformation(connections)
     
     @staticmethod
     def deleteConnection(id: int, dataBaseExternal: DataBaseExternalInterface,  connectionExternal: ConnectionExternalInterface, connectAdapter: ConnectAdapterInterface = DefaultConnectionPresenter):
@@ -57,6 +60,7 @@ class ConnectionController:
                 token: str, 
                 mqttTopic: str, 
                 robotId: int,
+                brokerId: int,
                 dataBaseExternal: DataBaseExternalInterface,
                 connectionExternal: ConnectionExternalInterface,
                 connectAdapter: ConnectAdapterInterface = DefaultConnectionPresenter,
@@ -64,7 +68,7 @@ class ConnectionController:
         
         dataBaseGateway = DataBaseGateway(dataBaseExternal)
         
-        connection = ConnectionUseCases.create(ip, port, description, token, mqttTopic, robotId, dataBaseGateway)
+        connection = ConnectionUseCases.create(ip, port, description, token, mqttTopic, robotId, brokerId, dataBaseGateway)
         
         if runConnection:
             connection = ConnectionUseCases.runConnection(connection, connectionExternal)
@@ -123,7 +127,7 @@ class ConnectionController:
         return adapter.adaptConnectionInformation(connection)
     
     @staticmethod 
-    def updateConnection(id: int, ip: str, port: int, description: str, token: str, mqttTopic: str, robotId: int, dataBaseExternal: DataBaseExternalInterface, connectionExternal: ConnectionExternalInterface, connectAdapter: ConnectAdapterInterface = DefaultConnectionPresenter, runConnection = True):
+    def updateConnection(id: int, ip: str, port: int, description: str, token: str, mqttTopic: str, robotId: int, brokerId:int, dataBaseExternal: DataBaseExternalInterface, connectionExternal: ConnectionExternalInterface, connectAdapter: ConnectAdapterInterface = DefaultConnectionPresenter, runConnection = True):
         
         dataBaseGateway = DataBaseGateway(dataBaseExternal)
         
@@ -132,7 +136,7 @@ class ConnectionController:
         if connection:
 
             connection = ConnectionUseCases.closeConnection(connection, connectionExternal)
-            connection = ConnectionUseCases.updateConnection(id, ip, port, description, token, mqttTopic, robotId, dataBaseGateway)
+            connection = ConnectionUseCases.updateConnection(id, ip, port, description, token, mqttTopic, robotId, brokerId, dataBaseGateway)
             if runConnection:
                 connection = ConnectionUseCases.runConnection(connection, connectionExternal)
         

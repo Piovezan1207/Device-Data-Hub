@@ -1,10 +1,13 @@
 from src.web.pkg.interfaces.AdapterInterfaces import ConnectAdapterInterface
-# from src.web.pkg.interfaces.AdapterInterfaces import RobotAdapterInterface
 
 from src.web.adapters.presenter.RobotPresenter import DefaultRobotPresenter
+from src.web.adapters.presenter.BrokerPresenter import DefaultBrokerPresenter
+
+
 class DefaultConnectionPresenter(ConnectAdapterInterface):
     def __init__(self):
         self._robotAdapter = DefaultRobotPresenter()
+        self._brokerAdapter = DefaultBrokerPresenter()
     
     def adaptConnectionInformation(self, connection):
         
@@ -19,7 +22,7 @@ class DefaultConnectionPresenter(ConnectAdapterInterface):
             "token": connection.token,
             "mqttTopic": connection.mqttTopic,
             "robot": self._robotAdapter.adaptRobotInformation(connection.robot),
-            # "sender": connection.sender,
+            "broker": self._brokerAdapter.adaptBrokerInformation(connection.broker),
             "status": {
                 "running" : connection.status.running,
                 "connected" : connection.status.connected,
@@ -46,7 +49,7 @@ class DefaultConnectionPresenter(ConnectAdapterInterface):
                     "token": connection.token,
                     "mqttTopic": connection.mqttTopic,
                     "robot": self._robotAdapter.adaptRobotInformation(connection.robot),
-                    # "sender": connection.sender,
+                    "broker": self._brokerAdapter.adaptBrokerInformation(connection.broker),
                     "status": {
                                 "running" : connection.status.running,
                                 "connected" : connection.status.connected,

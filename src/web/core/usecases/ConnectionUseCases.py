@@ -1,11 +1,12 @@
 from src.web.core.entities.Connection import Connection
 from src.web.core.entities.Status import Status
-from src.web.pkg.DTO.connectionDTO  import ConnectionDTO
+from src.web.pkg.DTO.ConnectionDTO  import ConnectionDTO
 
 from src.web.pkg.interfaces.externalInterfaces import ConnectionExternalInterface
 from src.web.pkg.interfaces.gatewayInterfaces import DataBaseGatewayInterface
 
 from src.web.core.usecases.RobotUseCases import RobotUseCases
+from src.web.core.usecases.BrokerUseCases import BrokerUseCases
 
 class ConnectionUseCases:
     
@@ -17,6 +18,7 @@ class ConnectionUseCases:
                 token: str, 
                 mqttTopic: str, 
                 robotId: int, 
+                brokerId: int,
                 dataBaseGateway: DataBaseGatewayInterface
                 ) -> Connection:
         
@@ -26,9 +28,14 @@ class ConnectionUseCases:
         if robot is None:
             raise Exception("Robot not found")
         
-        connectionDto = dataBaseGateway.createConnection(ip, port, description, token, mqttTopic, robotId)
+        broker = BrokerUseCases.getBroker(brokerId, dataBaseGateway)
         
-        connection = ConnectionUseCases.DtoToEntitie(connectionDto, robot=robot ) 
+        if broker is None:
+            raise Exception("Broker not found")
+        
+        connectionDto = dataBaseGateway.createConnection(ip, port, description, token, mqttTopic, robotId, brokerId)
+        
+        connection = ConnectionUseCases.DtoToEntitie(connectionDto, robot=robot, broker=broker ) 
 
         return connection
     
@@ -42,9 +49,10 @@ class ConnectionUseCases:
            return None
         
         robot = RobotUseCases.getRobot(connectionDto.robotId, dataBaseGateway)
+        broker = BrokerUseCases.getBroker(connectionDto.brokerId, dataBaseGateway)
         status = ConnectionUseCases.getConnectionStatus(connectionDto.id, connectionExternal)
         
-        connection = ConnectionUseCases.DtoToEntitie(connectionDto, robot=robot,  status=status) 
+        connection = ConnectionUseCases.DtoToEntitie(connectionDto, robot=robot,  status=status, broker=broker) 
 
         return connection
     
@@ -60,8 +68,9 @@ class ConnectionUseCases:
         
         for connectionDto in connectionDtos:
             robot = RobotUseCases.getRobot(connectionDto.robotId, dataBaseGateway)
+            broker = BrokerUseCases.getBroker(connectionDto.brokerId, dataBaseGateway)
             status = ConnectionUseCases.getConnectionStatus(connectionDto.id, connectionExternal)
-            connection = ConnectionUseCases.DtoToEntitie(connectionDto, robot=robot,  status=status) 
+            connection = ConnectionUseCases.DtoToEntitie(connectionDto, robot=robot,  status=status, broker=broker) 
             connections.append(connection)
         
         return connections
@@ -80,7 +89,7 @@ class ConnectionUseCases:
         # connection = ConnectionUseCases.getConnection(id, dataBaseGateway)
         status = connectionExternal.closeConnection(connection.id)
         status = ConnectionUseCases.getConnectionStatus(connection.id, connectionExternal)
-        connection = ConnectionUseCases.DtoToEntitie(connection, robot=connection.robot,status=status)
+        connection = ConnectionUseCases.DtoToEntitie(connection, robot=connection.robot,status=status, broker=connection.broker)
         
         return connection
     
@@ -114,24 +123,28 @@ class ConnectionUseCases:
                         token: str, 
                         mqttTopic: str, 
                         robotId: int, 
+                        brokerId: int,
                         dataBaseGateway: DataBaseGatewayInterface,
                         ) -> Connection:
         
-        connectionDto = dataBaseGateway.updateConnection(id, ip, port, description, token, mqttTopic, robotId)
+        connectionDto = dataBaseGateway.updateConnection(id, ip, port, description, token, mqttTopic, robotId, brokerId)
         
         robot= RobotUseCases.getRobot(connectionDto.robotId, dataBaseGateway)
         
-        connection = ConnectionUseCases.DtoToEntitie(connectionDto, robot=robot)
+        broker = BrokerUseCases.getBroker(connectionDto.brokerId, dataBaseGateway)
+        
+        connection = ConnectionUseCases.DtoToEntitie(connectionDto, robot=robot, broker=broker)
         
         return connection
     
     @staticmethod
-    def DtoToEntitie(connectionDto: ConnectionDTO, robot = None,  status = None) -> Connection:
-        return Connection(connectionDto.id, 
-                          connectionDto.ip, 
-                          connectionDto.port, 
-                          connectionDto.description, 
-                          connectionDto.token, 
-                          connectionDto.mqttTopic, 
-                          robot, 
-                          status)
+    def DtoToEntitie(connectionDto: ConnectionDTO, robot = None,  status = None, broker=None) -> Connection:
+        return Connection(id=connectionDto.id, 
+                          ip=connectionDto.ip, 
+                          port=connectionDto.port, 
+                          description=connectionDto.description, 
+                          token=connectionDto.token, 
+                          mqttTopic=connectionDto.mqttTopic, 
+                          robot=robot, 
+                          broker=broker,
+                          status=status)
