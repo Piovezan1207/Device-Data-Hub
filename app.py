@@ -248,5 +248,5 @@ def api_stop_connection(id):
    
 
 if __name__ == '__main__':
-    # ConnectionController.runAllConnections(database, externalConnThreads)
+    ConnectionController.runAllConnections(database, externalConnThreads)
     app.run(debug=False)

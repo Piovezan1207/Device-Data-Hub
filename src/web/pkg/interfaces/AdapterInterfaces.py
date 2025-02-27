@@ -24,11 +24,11 @@ class ConnectAdapterInterface():
 
 class BrokerAdapterInterface():
     @abstractmethod 
-    def adaptConnectionInformation(broker: Broker):
+    def adaptBrokerInformation(broker: Broker):
         pass
 
     @abstractmethod 
-    def adaptConnectionsInformation(broker: Broker):
+    def adaptBrokersInformation(broker: Broker):
         pass
     
 

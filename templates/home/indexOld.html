@@ -1,0 +1,147 @@
+{% extends "defaultPage.html" %}
+
+{% block title %}Página Inicial{% endblock %}
+
+{% block content %}
+        <!-- Content Wrapper. Contains page content -->
+        <div class="content-wrapper">
+            <!-- Content Header (Page header) -->
+            <div class="content-header">
+                <div class="container">
+                    <div class="row mb-2">
+                        <div class="col-sm-6">
+                            <h1 class="m-0"> Ativos conectados</small></h1>
+                        </div><!-- /.col -->
+                        <div class="col-sm-6">
+
+                        </div><!-- /.col -->
+                    </div><!-- /.row -->
+                </div><!-- /.container-fluid -->
+            </div>
+            <!-- /.content-header -->
+
+            <!-- Main content -->
+            <div class="content">
+                <div class="container">
+                    <div class="row">
+                        <div class="col-lg">
+
+                            {% for connection in connections %}
+                            <div class="card">
+                                <div class="card-body">
+                                    <h5 class="card-title">{{connection['id']}} - {{connection["robot"]["type"]}}</h5>
+                                    <p class="card-text">
+                                        {{connection["description"]}}
+                                    </p>
+                                    <div class="d-flex gap-2 mb-2">
+                                        <button class="btn btn-danger btn-sm me-2" onclick="deleteConnection({{connection['id']}})" id="delete_conn_btn_{{connection['id']}}" >
+                                            <iconify-icon icon="tabler:trash" width="24" height="24"></iconify-icon>
+                                        </button>
+
+                                        {%if not connection["status"]["running"]  %}
+                                        <button class="btn btn-primary btn-sm me-2" onclick="runConnection({{connection['id']}})" id="run_conn_btn_{{connection['id']}}" >
+                                            <iconify-icon icon="mdi:play" width="24" height="24"></iconify-icon>
+
+                                        {% else %}
+
+                                        <button class="btn btn-primary btn-sm me-2" onclick="pauseConnection({{connection['id']}})" id="pause_conn_btn_{{connection['id']}}" >
+                                            <iconify-icon icon="material-symbols:pause" width="24" height="24"></iconify-icon>
+                                        </button>
+
+                                        {% endif %}
+
+                                        <button class="btn btn-primary btn-sm me-2" onclick="updateConnection({{connection['id']}})"  id="update_conn_btn_{{connection['id']}}" >
+                                            <iconify-icon icon="material-symbols:edit" width="24" height="24"></iconify-icon>
+                                        </button>
+                                    </div>
+                                    <table class="table table-bordered">
+                                        <thead>
+                                            <tr>
+                                                <th>info</th>
+                                                <th>value</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <tr>
+                                                <td>broker</td>
+                                                <td>{{connection["broker"]["nickname"]}}</td>
+                                            </tr>
+                                            <tr>
+                                                <td>ip</td>
+                                                <td>{{connection["ip"]}}</td>
+                                            </tr>
+                                            <tr>
+                                                <td>port</td>
+                                                <td>{{connection["port"]}}</td>
+                                            </tr>
+                                            <tr>
+                                                <td>topic</td>
+                                                <td>{{connection["mqttTopic"]}}</td>
+                                            </tr>
+
+                                            <tr>
+                                                <td>status</td>
+                                                <td>{{connection["status"]}}</td>
+                                            </tr>
+                                         
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                            {% endfor %}
+
+                        </div>
+                        <!-- /.col-md-6 -->
+
+                    </div>
+                    <!-- /.row -->
+                </div><!-- /.container-fluid -->
+            </div>
+            <!-- /.content -->
+        </div>
+        <!-- /.content-wrapper -->
+
+
+        <script>
+
+            function deleteConnection(id){
+
+                var confirmacao = confirm("Tem certeza que deseja deletar a conexão" + id + " ?");
+
+                if(confirmacao)
+                    {
+                        let formData = new FormData(); //Vai ser um fomulario enviado pelo javascript
+                            formData.append('id', id);
+
+                            fetch("{{ url_for('api_delete_connection', id=0) }}".replace("0", id),  {
+                            method: 'DELETE', 
+                            body: formData
+                            }).then(() => { document.location.reload(true);});
+                    }
+            }
+
+            function runConnection(id){
+
+                    fetch("{{ url_for('api_start_connection', id=0) }}".replace("0", id),  {
+                    method: 'GET', 
+                    }).then(() => { document.location.reload(true);});
+
+            }
+            
+            function pauseConnection(id){
+
+                    fetch("{{ url_for('api_stop_connection', id=0) }}".replace("0", id),  {
+                    method: 'GET', 
+                    }).then(() => { document.location.reload(true);});
+        
+            }
+            
+            function updateConnection(id){
+
+                    window.location.href="{{ url_for('connection_update', id=0) }}".replace("0", id)
+        
+            }
+            
+        </script>
+
+{% endblock %}
