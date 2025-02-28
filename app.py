@@ -15,7 +15,7 @@ from src.web.External.integrations.connectionExternal import connectionExternal,
 
 ######### Controller arch 
 from src.web.adapters.controller.ConnectionController import ConnectionController
-from src.web.adapters.controller.RobotController import RobotController
+from web.adapters.controller.RobotController import RobotController
 from src.web.adapters.controller.BrokerController import BrokerController
 
 
