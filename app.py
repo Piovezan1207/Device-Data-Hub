@@ -15,7 +15,7 @@ from src.web.External.integrations.connectionExternal import connectionExternal,
 
 ######### Controller arch 
 from src.web.adapters.controller.ConnectionController import ConnectionController
-from web.adapters.controller.RobotController import RobotController
+from src.web.adapters.controller.RobotController import RobotController
 from src.web.adapters.controller.BrokerController import BrokerController
 
 
@@ -82,12 +82,15 @@ def connection_create():
 def connection_post():
     data = request.form.to_dict()    
     
-    keysList = ['ip', 'port', 'description', 'token', 'topic', 'robot_id', 'broker_id']
+    keysList = ['ip', 'port', 'description' , 'topic', 'robot_id', 'broker_id']
     
     for key in keysList:
         if key not in data or data[key] == '':
             flash('O campo {} é obrigatorio.'.format(key), 'error')  # Store error message
             return redirect(url_for('connection_create'))  # Redirect to the same page
+        
+    if 'token' not in data or data['token'] == '':
+        data['token'] = ""
     
     
     connection = ConnectionController.createConnection(ip=data['ip'], 
@@ -117,12 +120,15 @@ def connection_update_post(id):
     data = request.form.to_dict()
     print(data)
     
-    keysList = ['ip', 'port', 'description', 'token', 'topic', 'robot_id', 'broker_id']
+    keysList = ['ip', 'port', 'description',  'topic', 'robot_id', 'broker_id']
     
     for key in keysList:
         if key not in data or data[key] == '':
             flash('O campo {} é obrigatorio.'.format(key), 'error')  # Store error message
             return redirect(url_for('connection_update', id=id))  # Redirect to the same page
+        
+    if 'token' not in data or data['token'] == '':
+        data['token'] = ""
     
     
     connection = ConnectionController.updateConnection(id = id,

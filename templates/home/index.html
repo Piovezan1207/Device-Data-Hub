@@ -31,24 +31,26 @@
                         </div>
                         <div class="card-body">
                             <p class="card-text text-muted">{{ connection["description"] }}</p>
+                            <img src="{{ url_for('static', filename='img/robots/' + connection['robot']['type'] + '.png') }}" 
+                            class="img-fluid mx-auto d-block" style="max-width: 100px; max-height: 100px;">
 
                             <div class="d-flex gap-2 mb-3">
                                 <button class="btn btn-danger btn-sm" onclick="deleteConnection({{ connection['id'] }})">
-                                    <i class="fas fa-trash-alt"></i>
+                                    <iconify-icon icon="mdi:trash" width="12" height="12"></iconify-icon>
                                 </button>
 
                                 {% if not connection["status"]["running"] %}
                                 <button class="btn btn-success btn-sm" onclick="runConnection({{ connection['id'] }})">
-                                    <i class="fas fa-play"></i>
+                                    <iconify-icon icon="mdi:play" width="12" height="12"></iconify-icon>
                                 </button>
                                 {% else %}
                                 <button class="btn btn-warning btn-sm" onclick="pauseConnection({{ connection['id'] }})">
-                                    <i class="fas fa-pause"></i>
+                                    <iconify-icon icon="material-symbols:pause" width="12" height="12"></iconify-icon>
                                 </button>
                                 {% endif %}
 
                                 <button class="btn btn-info btn-sm" onclick="updateConnection({{ connection['id'] }})">
-                                    <i class="fas fa-edit"></i>
+                                    <iconify-icon icon="material-symbols:edit" width="12" height="12"></iconify-icon>
                                 </button>
                             </div>
 
@@ -70,9 +72,10 @@
                                         <td><strong>Tópico MQTT</strong></td>
                                         <td>{{ connection["mqttTopic"] }}</td>
                                     </tr>
-                                    <tr>
+
+                                    <tr id="connection-{{ connection['id'] }}">
                                         <td><strong>Status</strong></td>
-                                        <td>
+                                        <td id="status-{{ connection['id'] }}">
                                             {% if connection["status"]["running"] and connection["status"]["connected"] %}
                                                 <span class="badge badge-success"><i class="fas fa-check-circle"></i> Rodando e Conectado</span>
                                             {% elif connection["status"]["running"] and connection["status"]["error"] %}
@@ -82,11 +85,11 @@
                                             {% else %}
                                                 <span class="badge badge-secondary"><i class="fas fa-pause-circle"></i> Parado</span>
                                             {% endif %}
-                                            
                                             <br>
                                             <small class="text-muted">{{ connection["status"]["message"] }}</small>
                                         </td>
                                     </tr>
+                                    
                                     
                                 </tbody>
                             </table>
@@ -123,6 +126,55 @@
     function updateConnection(id) {
         window.location.href = "{{ url_for('connection_update', id=0) }}".replace("0", id);
     }
+
+    
+        // Função para atualizar o status da conexão
+        function updateConnectionStatus() {
+            // Fazendo uma requisição GET para a API /api/connections
+            fetch("{{ url_for('api_get_connections') }}")
+                .then(response => response.json())
+                .then(data => {
+                    data.connections.forEach(connection => {
+                        // Pegando o ID da conexão e o novo status
+                        const connectionId = connection.id;
+                        const statusElement = document.getElementById('status-' + connectionId);
+                        
+                        // Atualizando o status na tabela
+                        if (connection.status.running && connection.status.connected) {
+                            statusElement.innerHTML = `
+                                <span class="badge badge-success"><i class="fas fa-check-circle"></i> Rodando e Conectado</span>
+                                <br><small class="text-muted">${connection.status.message}</small>
+                            `;
+                        } else if (connection.status.running && connection.status.error) {
+                            statusElement.innerHTML = `
+                                <span class="badge badge-warning"><i class="fas fa-exclamation-triangle"></i> Rodando com Erro</span>
+                                <br><small class="text-muted">${connection.status.message}</small>
+                            `;
+                        } else if (connection.status.error) {
+                            statusElement.innerHTML = `
+                                <span class="badge badge-danger"><i class="fas fa-times-circle"></i> Erro na Conexão</span>
+                                <br><small class="text-muted">${connection.status.message}</small>
+                            `;
+                        } else {
+                            statusElement.innerHTML = `
+                                <span class="badge badge-secondary"><i class="fas fa-pause-circle"></i> Parado</span>
+                                <br><small class="text-muted">${connection.status.message}</small>
+                            `;
+                        }
+                    });
+                })
+                .catch(error => console.error('Erro ao atualizar os status das conexões:', error));
+        }
+
+        // Atualiza o status a cada 5 segundos
+        setInterval(updateConnectionStatus, 2000);
+
+        // Atualiza o status logo após o carregamento da página
+        window.onload = updateConnectionStatus;
+
+
+
+
 </script>
 
 {% endblock %}
