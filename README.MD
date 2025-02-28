@@ -1,5 +1,7 @@
 
-# DEVICE DATA HUB
+
+![Logo](app/static/img/DDH.png)
+
 
 Um projeto desenvolvido pelo SENAI-SP, para implementação em um projeto fomentado pelo FINEP.
 
