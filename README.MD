@@ -1,6 +1,8 @@
 
 
 ![Logo](app/static/img/DDH_branco.png)
+![Imagem 1](app/static/img/SENAI.png) ![Imagem 2](caminho/para/FINEP.png)
+
 
 
 Um projeto desenvolvido pelo SENAI-SP, para implementação em um projeto fomentado pelo FINEP.
