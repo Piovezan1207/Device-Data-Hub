@@ -1,0 +1,83 @@
+{% extends "defaultPage.html" %}
+
+{% block title %}Conectar Novo Robô{% endblock %}
+
+{% block content %}
+<div class="content-wrapper">
+    <!-- Cabeçalho -->
+    <div class="content-header">
+        <div class="container">
+            <div class="row mb-3">
+                <div class="col-sm-6">
+                    <h1 class="m-0"><i class="fas fa-robot"></i> Cadastrar novo broker MQTT</h1>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Conteúdo Principal -->
+    <div class="content">
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-8 mx-auto">
+                    <div class="card shadow">
+                        <div class="card-header bg-danger text-white">
+                            <h5 class="card-title"><i class="fas fa-plug"></i> Cadastrar novo broker MQTT</h5>
+                        </div>
+                        <div class="card-body">
+                            <form action="{{ url_for('broker_post') }}" method="POST">
+                                <div class="row">
+                   
+                                    
+                                  
+                                    
+                                    <div class="col-md-6">
+                                        <div class="form-group">
+                                            <label><i class="fas fa-network-wired"></i> IP do broker</label>
+                                            <input type="text" class="form-control" name="ip" placeholder="Ex: 192.168.1.10" required>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="col-md-6">
+                                        <div class="form-group">
+                                            <label><i class="fas fa-plug"></i> Porta do Broker</label>
+                                            <input type="number" class="form-control" name="port" placeholder="Ex: 1883" required>
+                                        </div>
+                                    </div>
+
+                                    <div class="col-md-12">
+                                        <div class="form-group">
+                                            <label><i class="fas fa-info-circle"></i> Apelido</label>
+                                            <input type="text" class="form-control" name="nickname" placeholder="Digite um apelido para o broker." required>
+                                        </div>
+                                    </div>
+
+                                    <div class="col-md-6">
+                                        <div class="form-group">
+                                            <label><i class="fas fa-key"></i> Usuário do broker</label>
+                                            <input type="text" class="form-control" name="user" placeholder="Digite o usuário do broker.">
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="col-md-6">
+                                        <div class="form-group">
+                                            <label><i class="fas fa-comments"></i> Senha do broker</label>
+                                            <input type="text" class="form-control" name="password" placeholder="Digite a senha do broker." >
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="card-footer text-right">
+                                    <button type="submit" class="btn btn-secondary">
+                                        <i class="fas fa-save"></i> Salvar Broker
+                                    </button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div> <!-- /.col-lg-8 -->
+            </div> <!-- /.row -->
+        </div> <!-- /.container -->
+    </div> <!-- /.content -->
+</div> <!-- /.content-wrapper -->
+{% endblock %}

@@ -64,7 +64,7 @@ db.sqlite3
 db.sqlite3-journal
 
 # Flask stuff:
-instance/
+database/
 .webassets-cache
 
 # Scrapy stuff:
@@ -163,4 +163,4 @@ cython_debug/
 #  option (not recommended) you can uncomment the following to ignore the entire idea folder.
 #.idea/
 
-instance\banco.db
+database\banco.db

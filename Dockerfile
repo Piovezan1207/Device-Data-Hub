@@ -1,17 +1,24 @@
-# Use an official Python runtime as the base image
-FROM python:3.10
-# FROM 3.11.10-alpine3.20
+FROM python:3-alpine
 
-# Set the working directory in the container to /app
+RUN apk add --virtual .build-dependencies \
+            --no-cache \
+            python3-dev \
+            build-base \
+            linux-headers \
+            pcre-dev
+
+RUN apk add --no-cache pcre
+
 WORKDIR /app
 
-# Copy the current directory (our Flask app) into the container at /app
-COPY . /app
+COPY /app /app
 
-# Install Flask and other dependencies
-RUN pip install --no-cache-dir -r requirements.txt
+COPY ./requirements.txt /app
 
-ENV PYTHONUNBUFFERED=1
+RUN pip install -r /app/requirements.txt
 
-# Run the command to start the Flask app
-CMD [ "python", "-u", "mainMqtt.py" ]
+RUN apk del .build-dependencies && rm -rf /var/cache/apk/*
+EXPOSE 5000
+
+CMD ["uwsgi", "--ini", "/app/wsgi.ini"]
+# CMD ["python", "/app/app.py"]
