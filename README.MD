@@ -1,7 +1,10 @@
 
 
 ![Logo](app/static/img/DDH_branco.png)
-![Imagem 1](app/static/img/SENAI.png) ![Imagem 2](caminho/para/FINEP.png)
+<p align="center">
+    <img src="app/static/img/senai.png" alt="Imagem 1" width="150" style="margin-left: 20px; margin-right: 20px;" >
+    <img src="app/static/img/finep.png" alt="Imagem 2" width="150" style="margin-left: 20px; margin-right: 20px;">
+</p>
 
 
 
