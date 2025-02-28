@@ -1,6 +1,6 @@
 
 
-![Logo](app/static/img/DDH_branco.png)
+![Logo](app/static/img/DDH.png)
 <p align="center">
     <img src="app/static/img/senai.png" alt="Imagem 1" width="150"  >&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
     <img src="app/static/img/finep.png" alt="Imagem 2" width="150" >
