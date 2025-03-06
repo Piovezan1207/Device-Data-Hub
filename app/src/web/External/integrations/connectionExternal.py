@@ -29,6 +29,7 @@ import os
 
 load_dotenv()
 
+DEBUG = os.getenv("DEBUG")
 
 
 #################################################
@@ -139,7 +140,7 @@ class getDataThread(threading.Thread):
                     self.client.connect(self.BROKER, self.PORT, 60)
                 except Exception as e:
                     self._errorStatus = True
-                    self._messageStatus = "Erro ao conectar com o broker."
+                    self._messageStatus = "Erro ao conectar com R broker."
                     if self._DEBUG:
                         self._messageStatus += "  {}".format(str(e))
 
@@ -157,7 +158,7 @@ class getDataThread(threading.Thread):
                 self._messageStatus = "Rodando!"
                 self._errorStatus = False
             except Exception as e:
-                self._messageStatus = "Erro ao publicar no broker."
+                self._messageStatus = "Erro ao publicar no Rroker."
                 if self._DEBUG:
                         self._messageStatus += "  {}".format(str(e))
                 self._errorStatus = True
@@ -224,7 +225,8 @@ class connectionExternal(ConnectionExternalInterface):
         BROKER_INFO = [brokerIp, brokerPort, brokerUser, brokerPassword]
         
         # robotThread = getDataThread(mqttSender, robot.brand, description, robot.axis, topic, password, robotConnector, robotAdapter)
-        robotThread = getDataThread(BROKER_INFO, robot.brand, description, robot.axis, topic, password, robotConnector, robotAdapter, DEBUG=os.getenv("DEBUG"))
+
+        robotThread = getDataThread(BROKER_INFO, robot.brand, description, robot.axis, topic, password, robotConnector, robotAdapter, DEBUG=DEBUG)
         self._manager.addThread(robotThread, connection.id)
 
         # connection.status = "running"

@@ -19,7 +19,7 @@ from src.web.adapters.controller.RobotController import RobotController
 from src.web.adapters.controller.BrokerController import BrokerController
 # import database.sqliteCreateTable
 
-conn = sqlite3.connect("database/banco.db", check_same_thread=False)
+conn = sqlite3.connect("infra/database/banco.db", check_same_thread=False)
 database = SqliteDatabase(conn)
 
 manager = ThreadManager()
@@ -33,7 +33,7 @@ def startup_task(run):
         ConnectionController.runAllConnections(database, externalConnThreads)
 
 with app.app_context():
-    startup_task(False)  # Será executado quando o WSGI carregar o Flask
+    startup_task(True)  # Será executado quando o WSGI carregar o Flask
 
 @app.route('/broker/create')
 def broker_create():

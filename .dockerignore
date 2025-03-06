@@ -1,4 +1,4 @@
-/app/database/banco.db
+app/infra/database/banco.db
 
 # # Byte-compiled / optimized / DLL files
 # __pycache__/
