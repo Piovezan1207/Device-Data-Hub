@@ -51,12 +51,13 @@ class yaskawaHC10Connection(RobotExternalInterface):
         # Criar o socket UDP
         with socket.socket(socket.AF_INET, socket.SOCK_DGRAM) as sock:
             sock.settimeout(1)  # Timeout de 1 segundo
-            try:
-                # Obter posição e latência
-                position = self.sendPackage(sock)
-                return position
-            except socket.timeout:
-                pass
+            position = self.sendPackage(sock)
+            return position
+            # try:
+            #     # Obter posição e latência
+            #     position = self.sendPackage(sock)
+            # except socket.timeout:
+            #     pass
                 # print("Robot socket timeout: Nenhuma resposta recebida do robô em 1 segundo.")
 
 

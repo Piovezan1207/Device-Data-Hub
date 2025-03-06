@@ -24,15 +24,12 @@ import threading
 #################################################
 import paho.mqtt.client as mqtt
 
-# from dotenv import load_dotenv
-# import os
+from dotenv import load_dotenv
+import os
 
-# load_dotenv()
+load_dotenv()
 
-# BROKER_IP=os.getenv("BROKER_IP")
-# BROKER_PORT=int(os.getenv("BROKER_PORT"))
-# BROKER_USER=os.getenv("BROKER_USER")
-# BROKER_PASSWORD=os.getenv("BROKER_PASSWORD")
+
 
 #################################################
 
@@ -103,7 +100,8 @@ class getDataThread(threading.Thread):
                 ROBOT_POSITION_TOPIC, 
                 ROBOT_PASSWORD,
                 robotConnector,
-                robotAdapter):
+                robotAdapter,
+                DEBUG=False):
         super().__init__()
         self.running = True  # Flag de controle
         # self.client =  client
@@ -127,6 +125,8 @@ class getDataThread(threading.Thread):
         self.PORT =  BROKER_INFO[1]
         self.client = mqtt.Client()
         self.client.username_pw_set(BROKER_INFO[2], BROKER_INFO[3])
+        
+        self._DEBUG = DEBUG
 
     def run(self):
         print("Iniciando thread...", self)
@@ -140,6 +140,9 @@ class getDataThread(threading.Thread):
                 except Exception as e:
                     self._errorStatus = True
                     self._messageStatus = "Erro ao conectar com o broker."
+                    if self._DEBUG:
+                        self._messageStatus += "  {}".format(str(e))
+
                     self._runningStatus = True
                     self._connectedStatus = False
                     continue
@@ -155,6 +158,8 @@ class getDataThread(threading.Thread):
                 self._errorStatus = False
             except Exception as e:
                 self._messageStatus = "Erro ao publicar no broker."
+                if self._DEBUG:
+                        self._messageStatus += "  {}".format(str(e))
                 self._errorStatus = True
                 self._runningStatus = True
                 self._connectedStatus = False
@@ -171,6 +176,8 @@ class getDataThread(threading.Thread):
             self.client.disconnect()
     
     def sendRobotPosition(self):
+        # robot_information = RobotController.getRobotInfo(self.newRobot, self.robotConnector, self.robotAdapter)
+        # return robot_information
         try:
             robot_information = RobotController.getRobotInfo(self.newRobot, self.robotConnector, self.robotAdapter)
             return robot_information
@@ -178,7 +185,9 @@ class getDataThread(threading.Thread):
             self._connectedStatus = False
             self._errorStatus = True
             # self._messageStatus = "Problema ao se comunicar com o robô." #+ str(e)
-            self._messageStatus = "Erro na comunicação com robô." #+ str(e)
+            self._messageStatus = "Erro na comunicação com robô."
+            if self._DEBUG:
+                        self._messageStatus += "  {}".format(str(e))
 
 
 class connectionExternal(ConnectionExternalInterface):
@@ -215,7 +224,7 @@ class connectionExternal(ConnectionExternalInterface):
         BROKER_INFO = [brokerIp, brokerPort, brokerUser, brokerPassword]
         
         # robotThread = getDataThread(mqttSender, robot.brand, description, robot.axis, topic, password, robotConnector, robotAdapter)
-        robotThread = getDataThread(BROKER_INFO, robot.brand, description, robot.axis, topic, password, robotConnector, robotAdapter)
+        robotThread = getDataThread(BROKER_INFO, robot.brand, description, robot.axis, topic, password, robotConnector, robotAdapter, DEBUG=os.getenv("DEBUG"))
         self._manager.addThread(robotThread, connection.id)
 
         # connection.status = "running"

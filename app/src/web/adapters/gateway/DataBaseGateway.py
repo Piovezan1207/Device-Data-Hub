@@ -61,7 +61,6 @@ class DataBaseGateway(DataBaseGatewayInterface):
     
     def getAllConnections(self) -> list[ConnectionDTO]:
         connections = self._dataBaseExternal.getAll("connections")
-        print(connections)
         if connections is None:
             return None
             # raise Exception("No connections found.")

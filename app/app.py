@@ -28,11 +28,12 @@ externalConnThreads = connectionExternal(manager)
 app = Flask(__name__)
 app.secret_key = '123#Senai!!23@@()hd28'  # Required for flash messages
 
-def startup_task():
-    ConnectionController.runAllConnections(database, externalConnThreads)
+def startup_task(run):
+    if run:
+        ConnectionController.runAllConnections(database, externalConnThreads)
 
 with app.app_context():
-    startup_task()  # Será executado quando o WSGI carregar o Flask
+    startup_task(False)  # Será executado quando o WSGI carregar o Flask
 
 @app.route('/broker/create')
 def broker_create():
@@ -124,7 +125,7 @@ def connection_update(id):
 @app.route('/connection/update/<int:id>', methods=['POST'])
 def connection_update_post(id):
     data = request.form.to_dict()
-    print(data)
+    # print(data)
     
     keysList = ['ip', 'port', 'description',  'topic', 'robot_id', 'broker_id']
     
@@ -260,5 +261,5 @@ def api_stop_connection(id):
    
 
 if __name__ == '__main__':
-    ConnectionController.runAllConnections(database, externalConnThreads)
-    app.run(debug=True, port=3090)
+    # ConnectionController.runAllConnections(database, externalConnThreads)
+    app.run(debug=True, host="0.0.0.0", port=5000)
