@@ -5,9 +5,6 @@ services:
     build: .
     container_name: device-data-hub
     restart: always
-    environment:
-      - APP_KEY=reIKRuG0PjcV40tDzhr5HDbzuUggzr5lFAMnrQsV4mM=
-      - DEBUG=1
     volumes:
       - ddh-volume:/app/infra/database
     ports:
