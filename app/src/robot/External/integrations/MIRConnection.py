@@ -19,7 +19,7 @@ class MIRConnection(RobotExternalInterface):
         'Content-Type': 'application/json'
         }
         
-        response = requests.request("GET", url, headers=headers, data=payload)
+        response = requests.request("GET", url, headers=headers, data=payload, timeout=5)
 
         values = json.loads(response.text)
         values = values["position"]

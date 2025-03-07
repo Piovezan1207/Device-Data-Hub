@@ -1,5 +1,4 @@
 FROM python:3.13-alpine
-# FROM python:3.13
 
 RUN apk add --virtual .build-dependencies \
             --no-cache \
@@ -13,10 +12,13 @@ RUN apk add --no-cache pcre
 WORKDIR /app
 
 COPY /app /app
-
 COPY entrypoint.sh /entrypoint.sh
-
 COPY ./requirements.txt /app
+
+
+ENV APP_KEY=reIKRuG0PjcV40tDzhr5HDbzuUggzr5lFAMnrQsV4mM=
+ENV DEBUG=1
+
 
 RUN pip install -r /app/requirements.txt
 
