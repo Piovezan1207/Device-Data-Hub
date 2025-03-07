@@ -33,7 +33,7 @@ def startup_task(run):
         ConnectionController.runAllConnections(database, externalConnThreads)
 
 with app.app_context():
-    startup_task(True)  # Será executado quando o WSGI carregar o Flask
+    startup_task(False)  # Será executado quando o WSGI carregar o Flask
 
 @app.route('/broker/create')
 def broker_create():
