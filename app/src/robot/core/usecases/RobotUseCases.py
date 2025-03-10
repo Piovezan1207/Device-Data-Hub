@@ -26,4 +26,5 @@ class RobotUseCase:
         
         robot.position = informations[0]
         robot.claw = informations[1]
+        robot.data = informations[2]
         return robot

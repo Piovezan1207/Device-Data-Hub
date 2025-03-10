@@ -1,5 +1,6 @@
 app/infra/database/banco.db
 .github
+testes.py
 
 # # Byte-compiled / optimized / DLL files
 # __pycache__/

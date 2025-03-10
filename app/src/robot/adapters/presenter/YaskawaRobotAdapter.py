@@ -13,6 +13,7 @@ class YaskawaRobotAdapter(RobotAdapterInterface):
         robotInformations = {
         "axis": robot.position, 
         "claw_open": robot.claw,
+        "data" : robot.data,
         "robot_on": 1,
         "robot" : 
             {

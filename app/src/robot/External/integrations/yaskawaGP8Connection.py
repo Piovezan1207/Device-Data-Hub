@@ -60,3 +60,5 @@ class yaskawaGP8Connection(RobotExternalInterface):
                 pass
 
 
+    def getRobotData(self) -> object:
+            return {"teste" : "gp8"}

@@ -9,3 +9,7 @@ class RobotExternalInterface():
     @abstractmethod
     def getClawStatus() -> int:
         pass
+    
+    @abstractmethod
+    def getRobotData() -> object:
+        pass

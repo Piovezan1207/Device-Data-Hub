@@ -31,7 +31,10 @@ Os dispositivos disponíveis para conexão serão adicionados conforme a demanda
 ## Observações antes de iniciarmos
 
 O objetivo desse rojeto não é rodar em nuvem e sim em um servidor ou computador que deve estar na mesma rede que os dispositivos que terão seus respectivos dados coletados.
+
 ## Rodando o projeto
+ 
+#### Rodando direto no seu SO:
 
 Para rodar o projeto localmente, siga os passos a seguir e se atente as observações.
 
@@ -54,13 +57,13 @@ Para rodar o projeto localmente, siga os passos a seguir e se atente as observa�
 
 4. Instancie o seu banco de dados
 ```bash
-    python app\database\sqliteCreateTable.py
+    python app\infra\sqliteCreateTable.py
 ```
 5. Faça uma códia do arquivo .env.example e renomeie para .env
 
 6. Crie uma key rodando o script a baixo e copie o resultado que foi printado.
 ```
-   python app\database\fernetKeyGenerator.py
+   python app\infra\fernetKeyGenerator.py
 ```
 
 7. Cole a key no arquivo .env.
@@ -76,4 +79,21 @@ Para rodar o projeto localmente, siga os passos a seguir e se atente as observa�
 9. Rode o projeto
 ```bash
    python app.py
+```
+
+#### Rodando com docker:
+
+1. Clone o repositório
+```bash
+  git clone https://github.com/Piovezan1207/Device-Data-Hub
+```
+
+2. Acesse a pasta do projeto
+```bash
+  cd Device-Data-Hub
+```
+
+3. Rode o docker-compose
+```bash
+    docker-compose up -d
 ```
