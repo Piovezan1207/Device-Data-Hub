@@ -6,7 +6,8 @@ class Robot:
                  axis_number: int,
                  position: list[int],
                  claw: int,
-                 request: Request):
+                 request: Request,
+                 data: object = {}):
         
         # if len(position) != axis_number:
         #     raise ValueError("The position list must match the number of axes.")
@@ -19,6 +20,7 @@ class Robot:
         self._position = position
         self._claw = claw
         self._request = request
+        self._data = data
 
     @property
     def brand(self) -> str:
@@ -59,5 +61,13 @@ class Robot:
     @request.setter
     def request(self, request):
         self._request = request
+        
+    @property
+    def data(self) -> object:
+        return self._data
+    
+    @data.setter
+    def data(self, data) -> object:
+        self._data = data
     
     

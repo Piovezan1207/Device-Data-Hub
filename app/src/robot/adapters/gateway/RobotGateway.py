@@ -10,6 +10,7 @@ class RobotGateway(RobotGatewayInterface):
     def getRobotInformation(self):
         positions = self._robotConnection.getRobotPosition()
         claw = self._robotConnection.getClawStatus()
+        data = self._robotConnection.getRobotData()
         
-        return  positions, claw
+        return  positions, claw, data
 

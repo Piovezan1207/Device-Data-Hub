@@ -61,3 +61,5 @@ class yaskawaHC10Connection(RobotExternalInterface):
                 # print("Robot socket timeout: Nenhuma resposta recebida do robô em 1 segundo.")
 
 
+    def getRobotData(self) -> object:
+            return {"teste" : "hc10"}

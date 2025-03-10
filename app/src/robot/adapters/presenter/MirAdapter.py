@@ -13,6 +13,7 @@ class MirAdapter(RobotAdapterInterface):
         robotInformations = {
         "axis": robot.position, 
         "claw_open": robot.claw,
+        "data" : robot.data,
         "robot_on": 1,
         "robot" : 
             {
@@ -22,8 +23,14 @@ class MirAdapter(RobotAdapterInterface):
              },
         "robot_fun_process_time" : robot.request.robot_request_timestemp,
         "request_timestemp" : robot.request.timestemp,
+        }
         
-        "goal_path": [
+        return json.dumps(robotInformations)
+      
+      
+      
+"""    
+              "goal_path": [
     9.4,
     16.75,
     26.565,
@@ -81,8 +88,4 @@ class MirAdapter(RobotAdapterInterface):
       "x": 16.75,
       "y": 9.399999618530273
     }
-  ]
-        
-        }
-        
-        return json.dumps(robotInformations)
+  ]"""
