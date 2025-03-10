@@ -140,7 +140,7 @@ class getDataThread(threading.Thread):
                     self.client.connect(self.BROKER, self.PORT, 60)
                 except Exception as e:
                     self._errorStatus = True
-                    self._messageStatus = "Erro ao conectar com R broker."
+                    self._messageStatus = "Erro ao conectar com o broker."
                     if self._DEBUG:
                         self._messageStatus += "  {}".format(str(e))
 
