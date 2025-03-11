@@ -12,88 +12,85 @@
 
 
 
-Um projeto desenvolvido pelo SENAI-SP, para implementação em um projeto fomentado pelo FINEP.
+A system developed by SENAI-SP for implementation in a project funded by FINEP.
 
-Device Data Hub é um projeto com o objetivo de facilitar a distribuição de dados de dispositivos industriais, para a implementação de gemeos digitais, dashboards, entre outros.
+Device Data Hub is a project aimed at facilitating the distribution of industrial device data for the implementation of digital twins, dashboards, and other systems that can consume MQTT data.
 
-O sistema oferece uma plataforma WEB onde conexões com dispositivos podem ser criadas e gerenciadas.
+The system provides a web platform where connections with devices can be created and managed.
 
-O Device Data Hub centraliza todos os dados coletados dos dispositivos em brokers MQTT, que podem também ser cadastrados e atrelados a uma conexão existente.
-
-
+Device Data Hub centralizes all data collected from devices into MQTT brokers, which can also be registered and linked to an existing connection.
 
 
-## Sobre dispositivos
+## About Devices
 
-Os dispositivos disponíveis para conexão serão adicionados conforme a demanda, não sendo possível a adição de um novo dispostivo via plataforma WEB, apenas pelo código (implementações futuras podem mudar a maneira como isso é feito).
+The devices available for connection will be added as needed. It is not possible to add a new device via the web platform, only through code (future implementations may change how this is done).
 
+## Notes Before Getting Started
 
-## Observações antes de iniciarmos
+The goal of this project is not to run in the cloud but rather on a server or computer that must be on the same network as the devices whose data will be collected.
 
-O objetivo desse rojeto não é rodar em nuvem e sim em um servidor ou computador que deve estar na mesma rede que os dispositivos que terão seus respectivos dados coletados.
-
-## Rodando o projeto
+## Running the Project
  
-#### Rodando direto no seu SO:
+#### Running directly on your OS:
 
-Para rodar o projeto localmente, siga os passos a seguir e se atente as observações.
+To run the project locally, follow these steps and pay attention to the notes.
 
-- Necessário python Python 3.13.0.
+- Python 3.13.0 is required.
 
-1. Clone o repositório
+1. Clone the repository:
 ```bash
   git clone https://github.com/Piovezan1207/Device-Data-Hub
 ```
 
-2. Acesse a pasta do projeto
+2. Access the project folder:
 ```bash
   cd Device-Data-Hub
 ```
 
-3. Instale as dependencias necessárias
+3. Install the necessary dependencies:
 ```bash
     pip install -r requirements.txt
 ```
 
-4. Instancie o seu banco de dados
+4. Initialize your database:
 ```bash
     python app\infra\sqliteCreateTable.py
 ```
-5. Faça uma códia do arquivo .env.example e renomeie para .env
+5. Make a copy of the .env.example file and rename it to .env.
 
-6. Crie uma key rodando o script a baixo e copie o resultado que foi printado.
+6. Generate a key by running the script below and copy the printed result:
 ```
    python app\infra\fernetKeyGenerator.py
 ```
 
-7. Cole a key no arquivo .env.
+7. Paste the key into the .env file:.
 ```
-   APP_KEY=<KEY COPIADA>
+   APP_KEY=<COPIED_KEY>
 ```
 
-8. Acesse a pasta app
+8. Access the app folder:
 ```bash
    cd app
 ```
 
-9. Rode o projeto
+9. Run the project:
 ```bash
    python app.py
 ```
 
-#### Rodando com docker:
+#### Running with Docker:
 
-1. Clone o repositório
+1. Clone the repository:
 ```bash
   git clone https://github.com/Piovezan1207/Device-Data-Hub
 ```
 
-2. Acesse a pasta do projeto
+2. Access the project folder:
 ```bash
   cd Device-Data-Hub
 ```
 
-3. Rode o docker-compose
+3. Run Docker Compose:
 ```bash
     docker-compose up -d
 ```
