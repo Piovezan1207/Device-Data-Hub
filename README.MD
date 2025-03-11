@@ -14,7 +14,7 @@
 
 Um sistema desenvolvido pelo SENAI-SP, para implementação em um projeto fomentado pelo FINEP.
 
-Device Data Hub é um projeto com o objetivo de facilitar a distribuição de dados de dispositivos industriais, para a implementação de gemeos digitais, dashboards, entre outros.
+Device Data Hub é um projeto com o objetivo de facilitar a distribuição de dados de dispositivos industriais, para a implementação de gemeos digitais, dashboards, entre outros sistemas que possam consulmir dados mqtt.
 
 O sistema oferece uma plataforma WEB onde conexões com dispositivos podem ser criadas e gerenciadas.
 
