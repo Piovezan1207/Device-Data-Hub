@@ -1,12 +1,8 @@
 from flask import Flask, jsonify, request, render_template, redirect, flash, url_for
-
 import sqlite3
-
-
-robotThreadList = {}
-
-
-
+import threading
+import requests
+import time
 ######### External 
 #Database
 from src.web.External.datasources.SqliteDatabase import SqliteDatabase
@@ -17,7 +13,6 @@ from src.web.External.integrations.connectionExternal import connectionExternal,
 from src.web.adapters.controller.ConnectionController import ConnectionController
 from src.web.adapters.controller.RobotController import RobotController
 from src.web.adapters.controller.BrokerController import BrokerController
-# import database.sqliteCreateTable
 
 conn = sqlite3.connect("infra/database/banco.db", check_same_thread=False)
 database = SqliteDatabase(conn)
@@ -27,14 +22,18 @@ externalConnThreads = connectionExternal(manager)
 
 app = Flask(__name__)
 app.secret_key = '123#Senai!!23@@()hd28'  # Required for flash messages
+PORT=5000
 
 def startup_task(run):
+    time.sleep(10)
+    print("Inicializando threads....")
     if run:
-        ConnectionController.runAllConnections(database, externalConnThreads)
+        requests.get(f'http://localhost:{PORT}/api/connection/start')
 
 with app.app_context():
-    startup_task(False)  # Será executado quando o WSGI carregar o Flask
-
+    threadStart = threading.Thread(target=startup_task, args=(True, ))  # Será executado quando o WSGI carregar o Flask
+    threadStart.start()
+    
 @app.route('/broker/create')
 def broker_create():
     return render_template('/brokers/create.html')
@@ -163,9 +162,8 @@ def robots():
 @app.route('/')
 def home():
     connections = ConnectionController.getAllConnections(database, externalConnThreads)
-    # print(connections)
+    print(externalConnThreads)
     return render_template("/home/index.html",  connections=connections["connections"])
-    # return "Servidor Flask está rodando!"
 
 ########################################################################################################################################
 
@@ -257,9 +255,13 @@ def api_stop_connection(id):
    connection = ConnectionController.stopConnection(id, database, externalConnThreads)
    return jsonify(connection) 
 
+@app.route('/api/connection/start', methods=["GET"])
+def api_start_all_connection():
+   connection = ConnectionController.runAllConnections(database, externalConnThreads)
+   return jsonify(connection) 
 
    
 
 if __name__ == '__main__':
     # ConnectionController.runAllConnections(database, externalConnThreads)
-    app.run(debug=True, host="0.0.0.0", port=5000)
+    app.run(debug=True, host="0.0.0.0", port=PORT)
