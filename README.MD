@@ -12,7 +12,7 @@
 
 
 
-Um projeto desenvolvido pelo SENAI-SP, para implementação em um projeto fomentado pelo FINEP.
+Um sistema desenvolvido pelo SENAI-SP, para implementação em um projeto fomentado pelo FINEP.
 
 Device Data Hub é um projeto com o objetivo de facilitar a distribuição de dados de dispositivos industriais, para a implementação de gemeos digitais, dashboards, entre outros.
 
