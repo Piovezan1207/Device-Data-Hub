@@ -1,12 +1,5 @@
 name: dockerHubPipeline
 
-# on:
-#   pull_request:
-#     branches:
-#       - docker  # Apenas quando o PR for mesclado na branch "docker"
-#     types:
-#       - closed  # Apenas quando o PR for fechado
-
 on:
     release:
         types: [published]
@@ -38,11 +31,6 @@ jobs:
         with:
           context: .
           push: true
-          tags: piovezan1207/device-data-hub:${{ github.event.release.tag_name }}
-    #   -
-        # name: Update Docker Hub Description
-        # run: |
-        #   curl -X PATCH "https://hub.docker.com/v2/repositories/piovezan1207/device-data-hub/" \
-        #   -H "Content-Type: application/json" \
-        #   -H "Authorization: Bearer ${{ secrets.DOCKERHUB_TOKEN }}" \
-        #   --data "{\"full_description\": \"${{ env.MESSAGE }}\"}"
+          tags: |
+            piovezan1207/device-data-hub:${{ github.event.release.tag_name }}
+            piovezan1207/device-data-hub:latest
