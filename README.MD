@@ -94,3 +94,13 @@ To run the project locally, follow these steps and pay attention to the notes.
 ```bash
     docker-compose up -d
 ```
+
+## Docker Hub
+
+[Device Data Hub](https://hub.docker.com/repository/docker/piovezan1207/device-data-hub/general)
+
+## License
+
+[MIT](https://choosealicense.com/licenses/mit/)
+
+
