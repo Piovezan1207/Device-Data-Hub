@@ -1,15 +1,19 @@
 name: dockerHubPipeline
 
+# on:
+#   pull_request:
+#     branches:
+#       - docker  # Apenas quando o PR for mesclado na branch "docker"
+#     types:
+#       - closed  # Apenas quando o PR for fechado
+
 on:
-  pull_request:
-    branches:
-      - docker  # Apenas quando o PR for mesclado na branch "docker"
-    types:
-      - closed  # Apenas quando o PR for fechado
+    release:
+        types: [published]
 
 jobs:
   push_to_registry:
-    if: github.event.pull_request.merged == true  # Só executa se foi um merge
+    
     runs-on: ubuntu-latest
     steps:
       -
@@ -34,7 +38,7 @@ jobs:
         with:
           context: .
           push: true
-          tags: piovezan1207/device-data-hub:latest
+          tags: piovezan1207/device-data-hub:${{ github.event.release.tag_name }}
     #   -
         # name: Update Docker Hub Description
         # run: |
