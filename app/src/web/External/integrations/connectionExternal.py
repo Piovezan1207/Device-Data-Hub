@@ -12,10 +12,10 @@ from src.robot.adapters.controller.RobotController import RobotController
 
 from src.robot.External.integrations.yaskawaHC10Connection import yaskawaHC10Connection
 from src.robot.External.integrations.yaskawaGP8Connection import yaskawaGP8Connection
-from src.robot.adapters.presenter.YaskawaRobotAdapter import YaskawaRobotAdapter
+from src.robot.adapters.presenter.YaskawaRobotAdapter import YaskawaRobotAdapter, YaskawaRobotAdapterPt
 
 from src.robot.External.integrations.MIRConnection import MIRConnection
-from src.robot.adapters.presenter.MirAdapter import MirAdapter
+from src.robot.adapters.presenter.MirAdapter import MirAdapter, MirAdapterPt
 
 from src.robot.adapters.controller.RobotController import RobotController
 
@@ -211,13 +211,13 @@ class connectionExternal(ConnectionExternalInterface):
         password = connection.token
         if robot.type == "HC10":
             robotConnector = yaskawaHC10Connection(ip, port)
-            robotAdapter = YaskawaRobotAdapter()
+            robotAdapter = YaskawaRobotAdapterPt()
         elif robot.type == "GP8":
             robotConnector = yaskawaGP8Connection(ip, port)
-            robotAdapter = YaskawaRobotAdapter()
+            robotAdapter = YaskawaRobotAdapterPt()
         elif robot.type == "MIR100":
             robotConnector = MIRConnection(ip, password)
-            robotAdapter = MirAdapter()
+            robotAdapter = MirAdapterPt()
         else:
             raise Exception("Robot not found")
         
