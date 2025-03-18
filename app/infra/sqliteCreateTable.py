@@ -47,7 +47,9 @@ conn.commit()
 robots = [
     ('HC10', 6, 'YASKAWA'),
     ('GP8', 6, 'YASKAWA'),
-    ('MIR100', 3, 'MIR')
+    ('MIR100', 3, 'MIR'),
+    ('KR 20-3', 6, 'KUKA'),
+    ('TX2-60', 6, 'STAUBLI'),
 ]
 
 # Inserir dados na tabela

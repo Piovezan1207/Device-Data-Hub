@@ -9,13 +9,20 @@ from src.web.pkg.interfaces.externalInterfaces import ConnectionExternalInterfac
 from src.robot.pkg.DTO.RobotDTO import RobotDTO
 
 from src.robot.adapters.controller.RobotController import RobotController
-
+##YASKAWA
 from src.robot.External.integrations.yaskawaHC10Connection import yaskawaHC10Connection
 from src.robot.External.integrations.yaskawaGP8Connection import yaskawaGP8Connection
 from src.robot.adapters.presenter.YaskawaRobotAdapter import YaskawaRobotAdapter, YaskawaRobotAdapterPt
-
+##MIR
 from src.robot.External.integrations.MIRConnection import MIRConnection
 from src.robot.adapters.presenter.MirAdapter import MirAdapter, MirAdapterPt
+##KUKA
+from src.robot.External.integrations.KukaKR203Connection import KukaKR203Connection
+from src.robot.adapters.presenter.KukaRobotAdapter import KukaRobotAdapter, KukaRobotAdapterPt
+##STAUBLI
+from src.robot.External.integrations.StaubliTX260Connection import StaubliTX260Connection
+from src.robot.adapters.presenter.StaubliRobotAdapter import StaubliRobotAdapter, StaubliRobotAdapterPt
+
 
 from src.robot.adapters.controller.RobotController import RobotController
 
@@ -218,6 +225,12 @@ class connectionExternal(ConnectionExternalInterface):
         elif robot.type == "MIR100":
             robotConnector = MIRConnection(ip, password)
             robotAdapter = MirAdapterPt()
+        elif robot.type == "KR 20-3":
+            robotConnector = KukaKR203Connection(ip, password)
+            robotAdapter = KukaRobotAdapterPt()
+        elif robot.type == "TX2-60":
+            robotConnector = StaubliTX260Connection(ip, password)
+            robotAdapter = StaubliRobotAdapterPt()
         else:
             raise Exception("Robot not found")
         
