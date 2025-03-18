@@ -22,6 +22,9 @@ from src.robot.adapters.presenter.KukaRobotAdapter import KukaRobotAdapter, Kuka
 ##STAUBLI
 from src.robot.External.integrations.StaubliTX260Connection import StaubliTX260Connection
 from src.robot.adapters.presenter.StaubliRobotAdapter import StaubliRobotAdapter, StaubliRobotAdapterPt
+##MITUTOYO
+from src.robot.External.integrations.MitutoyoCrystaApexSConnection import MitutoyoCrystaApexSConnection
+from src.robot.adapters.presenter.MitutoyoCrystaApexSAdapter import MitutoyoCrystaApexSAdapter, MitutoyoCrystaApexSAdapterPt
 
 
 from src.robot.adapters.controller.RobotController import RobotController
@@ -231,6 +234,9 @@ class connectionExternal(ConnectionExternalInterface):
         elif robot.type == "TX2-60":
             robotConnector = StaubliTX260Connection(ip, password)
             robotAdapter = StaubliRobotAdapterPt()
+        elif robot.type == "CRYSTAL APEX S":
+            robotConnector = MitutoyoCrystaApexSConnection(ip, password)
+            robotAdapter = MitutoyoCrystaApexSAdapterPt()
         else:
             raise Exception("Robot not found")
         

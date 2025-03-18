@@ -50,6 +50,7 @@ robots = [
     ('MIR100', 3, 'MIR'),
     ('KR 20-3', 6, 'KUKA'),
     ('TX2-60', 6, 'STAUBLI'),
+    ('CRYSTAL APEX S', 3, 'MITUTOYO'),
 ]
 
 # Inserir dados na tabela
