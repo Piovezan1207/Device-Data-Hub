@@ -97,7 +97,7 @@ To run the project locally, follow these steps and pay attention to the notes.
 
 ## Docker Hub
 
-[Device Data Hub](https://hub.docker.com/repository/docker/piovezan1207/device-data-hub/general)
+[Device Data Hub](https://hub.docker.com/r/piovezan1207/device-data-hub)
 
 ## License
 
