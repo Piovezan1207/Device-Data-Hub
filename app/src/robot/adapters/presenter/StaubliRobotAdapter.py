@@ -11,7 +11,7 @@ class StaubliRobotAdapter(RobotAdapterInterface):
     
     def adaptRobotInformationsToDT(self, robot: Robot):
         robotInformations = {
-        "axis": robot.position, 
+        "axes": robot.position, 
         "claw_open": robot.claw,
         "data" : robot.data,
         "robot_on": 1,
