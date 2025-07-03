@@ -221,22 +221,22 @@ class connectionExternal(ConnectionExternalInterface):
         password = connection.token
         if robot.type == "HC10":
             robotConnector = yaskawaHC10Connection(ip, port)
-            robotAdapter = YaskawaRobotAdapterPt()
+            robotAdapter = YaskawaRobotAdapter()
         elif robot.type == "GP8":
             robotConnector = yaskawaGP8Connection(ip, port)
-            robotAdapter = YaskawaRobotAdapterPt()
+            robotAdapter = YaskawaRobotAdapter()
         elif robot.type == "MIR100":
             robotConnector = MIRConnection(ip, password)
-            robotAdapter = MirAdapterPt()
+            robotAdapter = MirAdapter()
         elif robot.type == "KR 20-3":
             robotConnector = KukaKR203Connection(ip, password)
-            robotAdapter = KukaRobotAdapterPt()
+            robotAdapter = KukaRobotAdapter()
         elif robot.type == "TX2-60":
             robotConnector = StaubliTX260Connection(ip, password)
-            robotAdapter = StaubliRobotAdapterPt()
+            robotAdapter = StaubliRobotAdapter()
         elif robot.type == "CRYSTAL APEX S":
             robotConnector = MitutoyoCrystaApexSConnection(ip, password)
-            robotAdapter = MitutoyoCrystaApexSAdapterPt()
+            robotAdapter = MitutoyoCrystaApexSAdapter()
         else:
             raise Exception("Robot not found")
         
