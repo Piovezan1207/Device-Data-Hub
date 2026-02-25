@@ -2,9 +2,9 @@ import sqlite3
 
 # Conectar ao banco
 try:
-    conn = sqlite3.connect("app/infra/database/banco.db")
+    conn = sqlite3.connect("app/infra/database/database.db")
 except:
-    conn = sqlite3.connect("infra/database/banco.db")
+    conn = sqlite3.connect("infra/database/database.db")
     
 cursor = conn.cursor()
 print("Iniciando a criação do banco...")

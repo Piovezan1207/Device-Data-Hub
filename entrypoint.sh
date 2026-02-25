@@ -1,6 +1,6 @@
 #!/bin/sh
 
-DB_PATH="/app/infra/database/banco.db"
+DB_PATH="/app/infra/database/database.db"
 
 # Verifica se o banco já existe
 if [ ! -f "$DB_PATH" ]; then

@@ -14,7 +14,7 @@ from src.web.adapters.controller.ConnectionController import ConnectionControlle
 from src.web.adapters.controller.RobotController import RobotController
 from src.web.adapters.controller.BrokerController import BrokerController
 
-conn = sqlite3.connect("infra/database/banco.db", check_same_thread=False)
+conn = sqlite3.connect("infra/database/database.db", check_same_thread=False)
 database = SqliteDatabase(conn)
 
 manager = ThreadManager()

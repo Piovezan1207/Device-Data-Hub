@@ -1,4 +1,4 @@
-app/infra/database/banco.db
+app/infra/database/database.db
 .github
 testes.py
 teste.py
