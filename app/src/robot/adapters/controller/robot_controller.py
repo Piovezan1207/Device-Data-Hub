@@ -13,15 +13,13 @@ class RobotController:
         
         #Cria roo e requisição
         request = RequestUseCase.createRequest(1)
-        # print(request.id, robotDTO.brand, request)
+
         robot = RobotUseCase.createRobot(robotDTO, request)
-        # print(robot.request , "ue")
+
         robotGateway = RobotGateway(robotConnection)
         
         robotWithPositions = RobotUseCase.getRobotInfo(robot, robotGateway)
-        
-        
-        
+
         informationToDT = robotAdapter.adaptRobotInformationsToDT(robotWithPositions)
         
         return informationToDT
