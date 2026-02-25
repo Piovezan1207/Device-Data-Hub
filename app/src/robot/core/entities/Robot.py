@@ -1,4 +1,4 @@
-from src.robot.core.entities.Request import Request
+from src.robot.core.entities.request import Request
 
 class Robot:
     def __init__(self, brand: str, 

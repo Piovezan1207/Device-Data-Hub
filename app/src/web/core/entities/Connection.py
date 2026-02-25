@@ -1,6 +1,6 @@
-from src.robot.core.entities.Robot import Robot
-from src.web.core.entities.Broker import Broker
-from src.web.core.entities.Status import Status
+from src.robot.core.entities.robot import Robot
+from src.web.core.entities.broker import Broker
+from src.web.core.entities.status import Status
 
 class Connection:
     def __init__(self, id: int,

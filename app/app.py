@@ -5,14 +5,14 @@ import requests
 import time
 ######### External 
 #Database
-from src.web.External.datasources.SqliteDatabase import SqliteDatabase
+from app.src.web.External.datasources.sq_lite_database import SqliteDatabase
 #Connection with robots
-from src.web.External.integrations.connectionExternal import connectionExternal, ThreadManager
+from app.src.web.External.integrations.connection_external import connectionExternal, ThreadManager
 
 ######### Controller arch 
-from src.web.adapters.controller.ConnectionController import ConnectionController
-from src.web.adapters.controller.RobotController import RobotController
-from src.web.adapters.controller.BrokerController import BrokerController
+from app.src.web.adapters.controller.connection_controller import ConnectionController
+from app.src.web.adapters.controller.robot_controller import RobotController
+from app.src.web.adapters.controller.broker_controller import BrokerController
 
 conn = sqlite3.connect("infra/database/database.db", check_same_thread=False)
 database = SqliteDatabase(conn)
